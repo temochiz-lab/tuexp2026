@@ -279,11 +279,11 @@
                 experiment.push(trial);
 
                 const feedBack = {
-                    type: jsPsychHtmlButtonResponse,
-                    choices: ['次へ'],
+                    type: jsPsychHtmlKeyboardResponse,
+                    choices: [' '],
                     post_trial_gap: 0,
                     stimulus: function() {
-                        return `<p class="center-content">${getCorrectness()}</p>`;
+                        return `<p class="center-content">${getCorrectness()}</p><p class="center-content">スペースキーで次へ行きます</p>`;
                     },
                 };
 
