@@ -44,7 +44,8 @@
         let trial_count = jsPsych.data.getURLVariable('trial_count');
         const nTrials = (trial_count === null) ? 50 : Number(trial_count);
 
-        const nPractice = 10; // 練習試行の回数。練習のときは制限時間はありません。
+        let practice_trial_count = jsPsych.data.getURLVariable('practice_trial_count');
+        const nPractice = (practice_trial_count === null) ? 10 : Number(practice_trial_count); // 練習試行の回数
 
         // 黄色の色としてyellowを設定すると見えにくいので数値で指定しています
         const yellowData = '#ffd900';
