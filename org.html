@@ -2,295 +2,346 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type"  content="text/html; charset=UTF-8">
-		<script src="js/jquery.min.js"></script>
-		<script src="js/jquery-ui.min.js"></script>
-		<script src="../jspsych.js"></script>
-		<script src="../plugins/jspsych-survey-likert.js"></script>
-		<script src="../plugins/jspsych-single-stim.js"></script>
-		<script src="../plugins/jspsych-text.js"></script>
-		<script src="../plugins/jspsych-survey-multi-choice.js"></script>
-		<link rel="stylesheet" href="../css/jspsych.css"></link>
-		<link rel="stylesheet" href="css/jquery-ui.css"></link>
+		<script src="./jspsych-6.1.0/jspsych.js"></script>
+		<script src="./jspsych-6.1.0/plugins/jspsych-survey-likert-stroop.js"></script>
+		<script src="./jspsych-6.1.0/plugins/jspsych-html-button-response.js"></script>
+        <script src="./jspsych-6.1.0/plugins/jspsych-survey-html-form.js"></script>
+        <script src="./myFunc.js"></script>
+        <link rel="stylesheet" href="./jspsych-6.1.0/css/jspsych.css"></link>
 	</head>
 	<body>
-		<div id="jspsych-target"></div>
+		
 	</body>
 	<script>
+        /**
+         * 逆ストループもできる。パスワード保護必須
+         *
+         * by Daiichiro Kuroki
+         *
+         * MIT License | https://github.com/kohske/KisojiOnline/blob/master/LICENSE
+         */
 
-	// 実験前に変更してください。半角数字で入力すること。「きいろ」の確認
-	var kaitoJikan = 60; // 回答する時間（秒）
-	var pattern = 1; // ストループのパターン（1から4）
-	// 1 = 黒字の色名に対して色パッチで回答（逆ストループの統制条件）
-	// 2 = カラフルな色名に対して色パッチで回答（逆ストループ）
-	// 3 = 色パッチに対して黒字の色名で回答（ストループの統制条件）
-	// 4 = カラフルな色名に対して黒字の色名で回答（ストループ）
-	var nRensyu = 10; // 練習試行の回数
-	var nHonshiko = 100; // 制限時間内に終わらないくらいの数を設定すること
-    
-	var yellowData = '#ffd900';
-	//var yellowData = 'yellow'; // 見にくい
-	
-	// 回答の選択肢
-	var selectCol = [
-		{str: 'あか', col: 'red', id: 1},
-		{str: 'あお', col: 'blue', id: 2},
-		{str: 'きいろ', col: yellowData, id: 3},
-		{str: 'みどり', col: 'green', id: 4},
-		{str: 'くろ', col: 'black', id: 5}
-	];
-			
-	var patchWidth = 100;
-	var patchHeight = 50;
-	var fontSize1 = 30;
-	var startTime = 0;
-	
-	var myrandID = jsPsych.randomization.randomID(8);
-    	        
-	var datestr=new Date(); // 日時の情報
-	
-	var experiment = []; // 初期化	
-	
-	var welcome_block = {
-		type: "text",
-		text: '<p>実験にご参加いただきありがとうございます。</p>' +			
-			'<p>実験中はブラウザの「戻る」ボタンはクリックしないでください。</p>' +
-			'<p>準備ができたらスペースキーを押してください。</p>',
-		cont_key: [32], // スペースキー以外の入力を受け付けない。
-		on_finish: function(){
-			var month2 = datestr.getMonth()+1; // getMonthの戻り値は0から始まるため。
-			// 日時の情報と、実験参加者ごとにランダムな識別番号を追加。
-			jsPsych.data.addProperties({
-				nichiji: datestr.getFullYear() + '-' + month2 + '-' + datestr.getDate() + '-' + datestr.getHours() + ':' + datestr.getMinutes() + ':' + datestr.getSeconds(), 
-				randomID: myrandID
-			});
-		}
-	};
+        // URLからタスクの情報を読み取る
+        // reverse_stroop.html?task=2 のようにURLで指定する
+        // 1 = カラフルな色名に対して黒字の色名で回答（ストループ）
+        // 2 = 色パッチに対して黒字の色名で回答（ストループの統制条件）
+        // 3 = カラフルな色名に対して色パッチで回答（逆ストループ）
+        // 4 = 黒字の色名に対して色パッチで回答（逆ストループの統制条件）
         
-    experiment.push(welcome_block);
+        let task = jsPsych.data.getURLVariable('task');
+        if (typeof task === "undefined") task = 1;
 
-	if (pattern == 1) {
-		instraction = '<p>このブロックでは、言葉が表すインクの色を選択してください。「色のついた四角形」をクリックして回答します。</p>';
-	} else if (pattern == 2) {
-		instraction = '<p>このブロックでは、言葉とインクの色の組み合わせがちぐはぐですが、インクの色に惑わされないようにして、' +
-			'言葉が表すインクの色を選択してください。「色のついた四角形」をクリックして回答します。</p>';
-	} else if (pattern == 3) {
-		instraction = '<p>このブロックでは、インクの色にあたる言葉を選択してください。「色の名前」をクリックして回答します。</p>';
-	} else {
-		instraction = '<p>このブロックでは、言葉とインクの色の組み合わせがちぐはぐですが、言葉に惑わされないようにして、' +
-			'言葉が書かれているインクの色にあたる言葉を選択してください。「色の名前」をクリックして回答します。</p>';
-	};
+        // // URLから本試行の制限時間（秒）を読み取る
+        // let timeLimit = jsPsych.data.getURLVariable('timeLimit');
+        // if (typeof timeLimit === "undefined") timeLimit = 60;
+
+        // // URLから本試行の回数を読み取る
+        // let nTrials = jsPsych.data.getURLVariable('nTrials');
+        // if (typeof nTrials === "undefined") nTrials = 100;
+        
+        // URLから本試行の制限時間（秒）と回数を読み取る
+        let timeLimit = jsPsych.data.getURLVariable('timeLimit');
+        let nTrials = jsPsych.data.getURLVariable('nTrials');
+        if (typeof timeLimit === "undefined") {
+            if (typeof nTrials === "undefined") {
+                nTrials = 50; // 制限時間も回数も指定がないときは、ここで指定した回数に。
+            } else {
+                nTrials = Number(nTrials);
+            }
+        } else {
+            timeLimit = Number(timeLimit);
+            nTrials = timeLimit * 2; // 制限時間の2倍は回答できないだろうという予測
+            // nTrialsは制限時間を設ける場合にも設定する必要がある
+        }
+
+
+        // 制限時間を設けて実験を行うときには、その制限時間内に終わらないくらいの
+        // 試行数を設定すること。例えば制限時間60秒で、100問など。
+        // もしも制限時間内にすべての試行を終えた場合はそこで実験は終了となります。
+        // またこのときは正答数の自動計算がなされません。
+
+        const nPractice = 10; // 練習試行の回数。練習のときは制限時間はありません。
+    
+        // 黄色の色としてyellowを設定すると見えにくいので数値で指定しています
+    	const yellowData = '#ffd900';
+	    //const yellowData = 'yellow'; // 見にくい
 	
-	instraction += '<p>まずは練習試行を始めます。</p>' +
-		'<p>練習試行ではあなたの回答が正しかったかどうかについてのフィードバックがあります。<br>' +
-		'練習試行は' + nRensyu +'試行です。</p><p>スペースキーを押してください。</p>';
-						
-	var instruction1 = {
-		type: "text",
-		text: instraction,
-		cont_key: [32], // スペースキー以外の入力を受け付けない。
-	};
-	
-	experiment.push(instruction1);
-
-	// 実験刺激の準備
-	if (pattern == 1) {
-		// 課題１（黒字の色名）
-		var tmp_stimuli = [
-			{str: 'あか', strID: 1, col: 'black', colID: 5},
-			{str: 'あお', strID: 2, col: 'black', colID: 5},
-			{str: 'きいろ', strID: 3, col: 'black', colID: 5},
-			{str: 'みどり', strID: 4, col: 'black', colID: 5},
-			{str: 'くろ', strID: 5, col: 'black', colID: 5},
-		];
-	} else if (pattern == 2 || pattern == 4) {
-		// 課題２または４（カラフルな色名。色名と色が一致しないこと）
-		var tmp_stimuli = [
-			{str: 'あか', strID: 1, col: 'blue', colID: 2},
-			{str: 'あか', strID: 1, col: yellowData, colID: 3},
-			{str: 'あか', strID: 1, col: 'green', colID: 4},
-			{str: 'あか', strID: 1, col: 'black', colID: 5},
-			{str: 'あお', strID: 2, col: 'red', colID: 1},
-			{str: 'あお', strID: 2, col: yellowData, colID: 3},
-			{str: 'あお', strID: 2, col: 'green', colID: 4},
-			{str: 'あお', strID: 2, col: 'black', colID: 5},
-			{str: 'きいろ', strID: 3, col: 'red', colID: 1},
-			{str: 'きいろ', strID: 3, col: 'blue', colID: 2},
-			{str: 'きいろ', strID: 3, col: 'green', colID: 4},
-			{str: 'きいろ', strID: 3, col: 'black', colID: 5},
-			{str: 'みどり', strID: 4, col: 'red', colID: 1},
-			{str: 'みどり', strID: 4, col: 'blue', colID: 2},
-			{str: 'みどり', strID: 4, col: yellowData, colID: 3},
-			{str: 'みどり', strID: 4, col: 'black', colID: 5},
-			{str: 'くろ', strID: 5, col: 'red', colID: 1},
-			{str: 'くろ', strID: 5, col: 'blue', colID: 2},
-			{str: 'くろ', strID: 5, col: yellowData, colID: 3},
-			{str: 'くろ', strID: 5, col: 'green', colID: 4}
-		];
-	} else {
-		// 課題３（色パッチ。文字情報は使わないが互換性のため）
-		var tmp_stimuli = [
-			{str: 'あか', strID: 1, col: 'red', colID: 1},
-			{str: 'あお', strID: 2, col: 'blue', colID: 2},
-			{str: 'きいろ', strID: 3, col: yellowData, colID: 3},
-			{str: 'みどり', strID: 4, col: 'green', colID: 4},
-			{str: 'くろ', strID: 5, col: 'black', colID: 5},
-		];
-	};
-
-
-	var startMsg = {
-		type: "text",
-		text: '<p>今から本試行を始めます。本試行ではフィードバックはありません。</p>' +
-			'<p>制限時間は' + kaitoJikan +'秒です。できるだけ速く正確に回答してください。</p><p>スペースキーを押してください。</p>',
-		cont_key: [32], // スペースキー以外の入力を受け付けない。
-		on_finish: function(data){
-			startTime = data.time_elapsed; // 開始時間
-		}
-	};
-	
-	for (var k = 0; k < 2; k++){ // k = 0 は練習試行。 k = 1 は本試行
-		var test_stimuli = [];
-		var tmp_shuffled = jsPsych.randomization.repeat(tmp_stimuli, 1, false); // 刺激をランダムにする。falseがポイント
-
-		if (k == 0) { // 練習試行
-			var nMax = nRensyu;
-		} else { // 本試行
-			experiment.push(startMsg);
-			var nMax = nHonshiko;
-		};
-		
-		for (var i = 0; i < nMax; i++){
-			test_stimuli.push(tmp_shuffled[i % tmp_stimuli.length]);
-		}
-
-		var shuffled_stimuli = jsPsych.randomization.repeat(test_stimuli, 1, true); // テスト刺激をランダムにする。
-		for (var i = 0; i < shuffled_stimuli.str.length; i++){
-			var shuffledCol = jsPsych.randomization.repeat(selectCol, 1, true); // 回答の選択肢をランダムにする。
-		
-			if (pattern == 1 || pattern == 2) {
-				var colScale = makeColScale(shuffledCol, 2); // 色パッチの選択肢を作成
-			} else {
-				var colScale = makeColScale(shuffledCol, 1); // 色名（文字）の選択肢を作成
-			};
+        // 回答の選択肢
+        // このプログラムでは、赤=1, 青=2, 黄=3, 緑=4, 黒=5　と対応づけしています
+        const selectCol = [
+            {str: 'あか', col: 'red', id: 1},
+            {str: 'あお', col: 'blue', id: 2},
+            {str: 'きいろ', col: yellowData, id: 3},
+            {str: 'みどり', col: 'green', id: 4},
+            {str: 'くろ', col: 'black', id: 5}
+        ];
 			
-			if (pattern == 1 || pattern == 2 || pattern == 4) { // 刺激が文字
-				stim_html = '<p style="color: '+shuffled_stimuli.col[i]+'; text-align: center; font-size:' + fontSize1 + 'px;">' +shuffled_stimuli.str[i]+'</p>'; 
-			} else {
-				stim_html = '<div style="display: block; margin: auto; background-color: '+shuffled_stimuli.col[i]+'; width: '+patchWidth+'px; height: '+patchHeight+'px;"></div>';
-			};
+        const patchWidth = 100; // ピクセル
+        const patchHeight = 50;
+        const patchBlank = 20; // パッチとパッチの間隔
+        const fontSize1 = 30;
+        let startTime = 0;
+        
+        const myrandID = jsPsych.randomization.randomID(8);
+    	        
+        let experiment = []; // 初期化	
+        // このプログラムではtimeline_variableを使わずに、jsPsychのオブジェクトを順番にexperimentにpushしています
+        
+        let option_string = '<option value="">年齢を選択してください</option>';
+        for (let i = 10; i <= 80; i++){
+            option_string += '<option value="' + i + '">' + i +'歳</option>';
+        }
 
-			var trial = {
-				type: 'survey-likert', // 使用するプラグイン
-				timing_post_trial: 0,
-				questions: [stim_html],
-				labels: [colScale],
-				//intervals: [[5]],
-				data: {honshiko: k, strID: shuffled_stimuli.strID[i], colID: shuffled_stimuli.colID[i], choice: shuffledCol.id}, // 刺激と選択肢の記録
-				on_finish: function(data){
-					var arrayResponses = JSON.parse(data.responses); // responsesは文字列型で集計時に扱いにくいため、データを切り分けます。
-					if (pattern == 1 || pattern == 2) {
-						var correctID = data.strID; // 正解のID
-						
-					} else {
-						var correctID = data.colID;
-					};
-				
-					if (data.choice[arrayResponses.Q0] == correctID) {
-						var seikai = 1; // 正答
-					} else {
-						var seikai = 0;
-					};
-				
-					jsPsych.data.addDataToLastTrial(arrayResponses);
-					jsPsych.data.addDataToLastTrial({kaito: data.choice[arrayResponses.Q0]});
-					jsPsych.data.addDataToLastTrial({seikai: seikai});
-		
-					if (data.honshiko == 1) { // 本試行
-						var time2 = data.time_elapsed - startTime; // 経過時間
-						console.log(time2);
-						if (time2 > kaitoJikan * 1000) {
-							var trials = jsPsych.data.getTrialsOfType('survey-likert'); // リッカートのデータだけを抽出
-							var sum_seikai = 0;
-							var nTotal = 0;
-							for (var i = 0; i < trials.length; i++) {
-								if (trials[i].honshiko == 1) {
-									nTotal++; // 本試行の試行数をカウント
-									if (trials[i].seikai == 1) {
-										sum_seikai++; // 正解した試行数
-									}
-								}
-							}
-							jsPsych.data.addDataToLastTrial({
-								jikan: kaitoJikan,
-								pattern: pattern,
-								total: nTotal,
-								correct: sum_seikai,
-								incorrect: nTotal - sum_seikai});
-							jsPsych.endExperiment('<p class="center-content">実験は終わりです。</p>');
-						}
-					}
-				}
-			}
-		
-			experiment.push(trial);
-		
-			var feedBack = {
-				type: "text",
-				timing_post_trial: 0,
-				text: function() {
-					return '<p class="center-content">' + getCorrectness() + 
-					'<br>スペースキーを押してください</p>';
-				},
-				cont_key: [32], // スペースキー以外の入力を受け付けない。
-			};
-		
-			if (k == 0) { // 練習試行
-				experiment.push(feedBack);
-			}
-		
-		}
-	}
+        const form_trial = {
+            type: 'survey-html-form',
+            preamble: '<h2>実験を始めます。<br>性別と年齢を回答して「次へ」をクリックしてください。</h2>',
+            html: '<input type="radio" name="gender"" value="1" required>男性'
+                + '<input type="radio" name="gender" value="2">女性'
+                + '<input type="radio" name="gender" value="3">その他・無回答'
+                + '<div> </div>'
+                + '<select class="age" required name="age">'
+                + option_string + '</select>'
+                + '<div> </div>',
+            button_label: '次へ',
+            on_finish: function(data){
+                const arrayResponses = JSON.parse(data.responses); // responsesは文字列型で集計時に扱いにくいため、データを切り分けます。
+                jsPsych.data.addProperties(arrayResponses);
+                jsPsych.data.addProperties({
+                    date: getDateStr(),
+                    randomID: myrandID,
+                    task: task});
+            }
+        }
+        experiment.push(form_trial);
 
-	 jsPsych.init({
-		display_element: $('#jspsych-target'),
-		timeline: experiment,
-		on_finish: function(data){ 
-			jsPsych.data.displayData('csv') // 画面上にカンマ区切りでデータを表示します。
-			jsPsych.data.localSave(myrandID + '-' + pattern + '.csv', 'csv')
-		}
-	});
+        const messages = [
+            `<p>この課題では、言葉とインクの色の組み合わせがちぐはぐですが、言葉に惑わされないようにして、インクの色を選択してください。<br>「色の名前」をクリックして回答します。</p>`,
+            `<p>この課題では、インクの色にあたる言葉を選択してください。<br>「色の名前」をクリックして回答します。</p>`,
+            `<p>この課題では、言葉とインクの色の組み合わせがちぐはぐですが、インクの色に惑わされないようにして、言葉が意味する色を選択してください。<br>「色のついた四角形」をクリックして回答します。</p>`,
+            `<p>この課題では、言葉が意味するインクの色を選択してください。<br>「色のついた四角形」をクリックして回答します。</p>`
+        ];
 	
-	function getCorrectness(){
-		var data = jsPsych.data.getLastTrialData();
-		if (data.seikai == 1) {
-			return '正しい回答です。';
-		} else {
-			return '誤った回答です。';
-		};
-	};
+        const instruction = `${messages[task-1]} <p>まずは練習試行を始めます。</p>
+            <p>練習試行ではあなたの回答が正しかったかどうかについてのフィードバックがあります。<br>
+            練習試行は${nPractice}試行です。</p>`;
+                            
+        const instruction1 = {
+            type: 'html-button-response',
+            choices: ['次へ'],
+            stimulus: instruction,
+        };
 	
+        experiment.push(instruction1);
 
-	function makeColScale(colData, type) { // typeが1のときは文字の選択肢、typeが2のときは色パッチの選択肢
-		if (type == 1) {
-			var myScale = [
-				'<p style="color: black; font-size:'+fontSize1+'px;">' +colData.str[0]+'</p>',
-				'<p style="color: black; font-size:'+fontSize1+'px;">' +colData.str[1]+'</p>',
-				'<p style="color: black; font-size:'+fontSize1+'px;">' +colData.str[2]+'</p>',
-				'<p style="color: black; font-size:'+fontSize1+'px;">' +colData.str[3]+'</p>',
-				'<p style="color: black; font-size:'+fontSize1+'px;">' +colData.str[4]+'</p>'
-			];
-		} else {
-			var myScale = [
-				'<div style="display: block; margin: auto; background-color: '+colData.col[0]+'; width: '+patchWidth+'px; height: '+patchHeight+'px;"></div>', 
-				'<div style="display: block; margin: auto; background-color: '+colData.col[1]+'; width: '+patchWidth+'px; height: '+patchHeight+'px;"></div>', 
-				'<div style="display: block; margin: auto; background-color: '+colData.col[2]+'; width: '+patchWidth+'px; height: '+patchHeight+'px;"></div>', 
-				'<div style="display: block; margin: auto; background-color: '+colData.col[3]+'; width: '+patchWidth+'px; height: '+patchHeight+'px;"></div>', 
-				'<div style="display: block; margin: auto; background-color: '+colData.col[4]+'; width: '+patchWidth+'px; height: '+patchHeight+'px;"></div>'
-			];
-			//var myScale = colData.str;
-			
-		}
-		return myScale;
-	}
+        let stimulus_set = [];
+        // 実験刺激の準備
+        if (task == 4) {
+            // 逆ストループの統制条件。黒字の色名
+            stimulus_set = [
+                {str: 'あか', strID: 1, col: 'black', colID: 5},
+                {str: 'あお', strID: 2, col: 'black', colID: 5},
+                {str: 'きいろ', strID: 3, col: 'black', colID: 5},
+                {str: 'みどり', strID: 4, col: 'black', colID: 5},
+                {str: 'くろ', strID: 5, col: 'black', colID: 5},
+            ];
+        } else if (task == 3 || task == 1) {
+            //　ストループ、逆ストループ。 カラフルな文字。文字と色が一致しないこと
+            stimulus_set = [
+                {str: 'あか', strID: 1, col: 'blue', colID: 2},
+                {str: 'あか', strID: 1, col: yellowData, colID: 3},
+                {str: 'あか', strID: 1, col: 'green', colID: 4},
+                {str: 'あか', strID: 1, col: 'black', colID: 5},
+                {str: 'あお', strID: 2, col: 'red', colID: 1},
+                {str: 'あお', strID: 2, col: yellowData, colID: 3},
+                {str: 'あお', strID: 2, col: 'green', colID: 4},
+                {str: 'あお', strID: 2, col: 'black', colID: 5},
+                {str: 'きいろ', strID: 3, col: 'red', colID: 1},
+                {str: 'きいろ', strID: 3, col: 'blue', colID: 2},
+                {str: 'きいろ', strID: 3, col: 'green', colID: 4},
+                {str: 'きいろ', strID: 3, col: 'black', colID: 5},
+                {str: 'みどり', strID: 4, col: 'red', colID: 1},
+                {str: 'みどり', strID: 4, col: 'blue', colID: 2},
+                {str: 'みどり', strID: 4, col: yellowData, colID: 3},
+                {str: 'みどり', strID: 4, col: 'black', colID: 5},
+                {str: 'くろ', strID: 5, col: 'red', colID: 1},
+                {str: 'くろ', strID: 5, col: 'blue', colID: 2},
+                {str: 'くろ', strID: 5, col: yellowData, colID: 3},
+                {str: 'くろ', strID: 5, col: 'green', colID: 4}
+            ];
+        } else {
+            // ストループの統制条件。色パッチ。文字情報は使わないが互換性のため
+            stimulus_set = [
+                {str: 'あか', strID: 1, col: 'red', colID: 1},
+                {str: 'あお', strID: 2, col: 'blue', colID: 2},
+                {str: 'きいろ', strID: 3, col: yellowData, colID: 3},
+                {str: 'みどり', strID: 4, col: 'green', colID: 4},
+                {str: 'くろ', strID: 5, col: 'black', colID: 5},
+            ];
+        };
+	
+	    for (let k = 0; k < 2; k++){ // k = 0 は練習試行。 k = 1 は本試行
+            const all_stimuli = [];
+            const tmp_shuffled = jsPsych.randomization.repeat(stimulus_set, 1, false); 
+            // 刺激をランダムにする。falseがポイント
+            // https://www.jspsych.org/core_library/jspsych-randomization/#jspsychrandomizationrepeat
+
+            let nMax = 0;
+            if (k == 0) { // 練習試行
+                nMax = nPractice;
+            } else { // 本試行
+                const startMsg = {
+                    // type: "text",
+                    type: 'html-button-response',
+                    choices: ['次へ'],
+                    stimulus: function(){
+                        if (typeof timeLimit === "undefined") {
+                            return `<p>今から本試行を始めます。本試行ではフィードバックはありません。</p>
+                            <p>全部で${nTrials}試行です。できるだけ速く正確に回答してください。</p>`;
+                        } else {
+                            return `<p>今から本試行を始めます。本試行ではフィードバックはありません。</p>
+                            <p>制限時間は${timeLimit}秒です。できるだけ速く正確に回答してください。</p>`;
+                        }
+                    },
+                    // stimulus: '<p>今から本試行を始めます。本試行ではフィードバックはありません。</p>' +
+                    //     '<p>制限時間は' + timeLimit +'秒です。できるだけ速く正確に回答してください。</p>',
+                    on_finish: function(data){
+                        startTime = data.time_elapsed; // 開始時間
+                    }
+                };
+                experiment.push(startMsg);
+                nMax = nTrials;
+            };
+            
+            for (let i = 0; i < nMax; i++){
+                all_stimuli.push(tmp_shuffled[i % stimulus_set.length]);
+            }
+
+            const shuffled_stimuli = jsPsych.randomization.repeat(all_stimuli, 1, true); // テスト刺激をランダムにする。
+            for (let i = 0; i < shuffled_stimuli.str.length; i++){
+                const shuffledCol = jsPsych.randomization.repeat(selectCol, 1, true); // 回答の選択肢をランダムにする。
+            
+                // 選択肢の作成（試行ごとに位置をランダムに）
+                let colScale = '';
+                if (task == 4 || task == 3) {
+                    colScale = makeColScale(shuffledCol, 2); // 色パッチの選択肢を作成
+                } else {
+                    colScale = makeColScale(shuffledCol, 1); // 色名（文字）の選択肢を作成
+                };
+                
+                // 刺激
+                let stim_html = '';
+                if (task == 4 || task == 3 || task == 1) { // 刺激が文字
+                    stim_html = '<p style="color: '+shuffled_stimuli.col[i]+'; text-align: center; font-size:' + fontSize1 + 'px;">' +shuffled_stimuli.str[i]+'</p>'; 
+                } else {
+                    stim_html = '<div style="display: block; margin: auto; background-color: '+shuffled_stimuli.col[i]+'; width: '+patchWidth+'px; height: '+patchHeight+'px;"></div>';
+                };
+
+                let trial = {
+                    type: 'survey-likert', // 独自のプラグイン
+                    post_trial_gap: 0,
+                    button_label: '次へ',
+                    questions: [{prompt: stim_html, labels: colScale, required: true}],
+                    data: {honshiko: k, strID: shuffled_stimuli.strID[i], colID: shuffled_stimuli.colID[i], choice: shuffledCol.id}, // 刺激と選択肢の記録
+                    on_finish: function(data){
+                        const arrayResponses = JSON.parse(data.responses); // responsesは文字列型で集計時に扱いにくいため、データを切り分けます。
+                        let correctID = 0;
+                        if (task == 4 || task == 3) {
+                            correctID = data.strID; // 正解のID                            
+                        } else {
+                            correctID = data.colID;
+                        };
+                    
+                        let seikai = 0;
+                        if (data.choice[arrayResponses.Q0] === correctID) seikai = 1; // 正答
+                    
+                        jsPsych.data.addDataToLastTrial(arrayResponses);
+                        jsPsych.data.addDataToLastTrial({kaito: data.choice[arrayResponses.Q0]});
+                        jsPsych.data.addDataToLastTrial({seikai: seikai});
+            
+                        if (data.honshiko === 0) return; // 練習のときは以下をやらない
+                            
+                        const time2 = data.time_elapsed - startTime; // 経過時間
+                        console.log(time2);
+
+                        if (typeof timeLimit === "undefined") return; // すべての試行数を決めているとき
+                        if (time2 <= timeLimit * 1000) return;　// 制限時間内のときは以下をやらない
+                        
+                        const nTotal = jsPsych.data.get().filter({trial_type: 'survey-likert', honshiko: 1}).count();
+                        const nCorrect = jsPsych.data.get().filter({trial_type: 'survey-likert', honshiko: 1, seikai: 1}).count();
+                      
+                        jsPsych.data.addProperties({
+                            timeLimit: timeLimit,
+                            // task: task,
+                            total: nTotal,
+                            correct: nCorrect,
+                            incorrect: nTotal - nCorrect});
+                        jsPsych.endExperiment('<p class="center-content">回答時間を過ぎました。実験の結果が自動的にダウンロードされたか、ダウンロードの画面が表示されます。</p>');
+                    }
+                }
+            
+                experiment.push(trial);
+            
+                const feedBack = {
+                    type: 'html-button-response',
+                    choices: ['次へ'],
+                    post_trial_gap: 0,
+                    stimulus: function() {
+                        return `<p class="center-content">${getCorrectness()}</p>`;
+                    },
+                };
+            
+                if (k == 0) { // 練習試行
+                    experiment.push(feedBack);
+                }            
+            }
+        }
+
+        const endMsg = { // このブロックは制限時間内にすべての試行に回答したときにのみ呼ばれます
+            type: 'html-button-response',
+            choices: ['次へ'],
+            stimulus: '<p class="center-content">すべての試行に回答しました。「次へ」をクリックすると、実験の結果が自動的にダウンロードされるか、ダウンロードの画面が表示されます。</p>',
+        };
+        experiment.push(endMsg);
+
+        jsPsych.init({
+            timeline: experiment,
+            on_finish: function(data){ 
+                // jsPsych.data.displayData('csv') // 画面上にカンマ区切りでデータを表示します。
+                jsPsych.data.get().ignore('stimulus').localSave('csv', myrandID + '-' + task + '.csv');
+            }
+        });
+        
+        function getCorrectness(){
+            const data = jsPsych.data.getLastTrialData();
+            if (data.values()[0].seikai == 1) {
+                return '正しい回答です。';
+            } else {
+                return '誤った回答です。';
+            };
+        };
+        
+
+        function makeColScale(colData, type) { // typeが1のときは文字の選択肢、typeが2のときは色パッチの選択肢
+            if (type == 1) {
+                const tmp_str = '<div style="display: block; margin: 20px ' + patchBlank + 'px; '
+                
+                return [
+                    tmp_str + 'width: '+patchWidth+'px; height: '+patchHeight+'px; font-size:'+fontSize1+'px;">'+colData.str[0]+'</div>', 
+                    tmp_str + 'width: '+patchWidth+'px; height: '+patchHeight+'px; font-size:'+fontSize1+'px;">'+colData.str[1]+'</div>', 
+                    tmp_str + 'width: '+patchWidth+'px; height: '+patchHeight+'px; font-size:'+fontSize1+'px;">'+colData.str[2]+'</div>', 
+                    tmp_str + 'width: '+patchWidth+'px; height: '+patchHeight+'px; font-size:'+fontSize1+'px;">'+colData.str[3]+'</div>', 
+                    tmp_str + 'width: '+patchWidth+'px; height: '+patchHeight+'px; font-size:'+fontSize1+'px;">'+colData.str[4]+'</div>', 
+                ];
+            } else {
+                const tmp_str = '<div style="display: block; margin: auto ' + patchBlank + 'px; background-color: '
+                return [
+                    tmp_str + colData.col[0]+'; width: '+patchWidth+'px; height: '+patchHeight+'px;"></div>', 
+                    tmp_str + colData.col[1]+'; width: '+patchWidth+'px; height: '+patchHeight+'px;"></div>', 
+                    tmp_str + colData.col[2]+'; width: '+patchWidth+'px; height: '+patchHeight+'px;"></div>', 
+                    tmp_str + colData.col[3]+'; width: '+patchWidth+'px; height: '+patchHeight+'px;"></div>', 
+                    tmp_str + colData.col[4]+'; width: '+patchWidth+'px; height: '+patchHeight+'px;"></div>'
+                ];    
+            }
+        }
 </script>
 </html>
