@@ -275,8 +275,7 @@
                             correct: nCorrect,
                             incorrect: nTotal - nCorrect
                         });
-                        // jsPsych 7: endExperiment() → abortExperiment()
-                        jsPsych.abortExperiment('<p class="center-content">回答時間を過ぎました。実験の結果が自動的にダウンロードされたか、ダウンロードの画面が表示されます。</p>');
+                        jsPsych.endExperiment('<p class="center-content">回答時間を過ぎました。実験の結果が自動的にダウンロードされたか、ダウンロードの画面が表示されます。</p>');
                     }
                 };
                 experiment.push(trial);
