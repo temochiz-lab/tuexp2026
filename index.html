@@ -41,19 +41,8 @@
         if (task === null) task = 1;
         else task = Number(task);
 
-        let timeLimit = jsPsych.data.getURLVariable('timeLimit');
-        let nTrials = jsPsych.data.getURLVariable('nTrials');
-        if (timeLimit === null) {
-            timeLimit = undefined;
-            if (nTrials === null) {
-                nTrials = 50; // 制限時間も回数も指定がないときは、ここで指定した回数に。
-            } else {
-                nTrials = Number(nTrials);
-            }
-        } else {
-            timeLimit = Number(timeLimit);
-            nTrials = timeLimit * 2; // 制限時間の2倍は回答できないだろうという予測
-        }
+        let trial_count = jsPsych.data.getURLVariable('trial_count');
+        const nTrials = (trial_count === null) ? 50 : Number(trial_count);
 
         const nPractice = 10; // 練習試行の回数。練習のときは制限時間はありません。
 
@@ -74,7 +63,6 @@
         const patchHeight = 50;
         const patchBlank = 20;
         const fontSize1 = 30;
-        let startTime = 0;
 
         // jsPsych 7: initJsPsych() の後で randomization を使用可能
         const myrandID = jsPsych.randomization.randomID(8);
@@ -186,18 +174,8 @@
                 const startMsg = {
                     type: jsPsychHtmlButtonResponse,
                     choices: ['次へ'],
-                    stimulus: function() {
-                        if (typeof timeLimit === "undefined") {
-                            return `<p>今から本試行を始めます。本試行ではフィードバックはありません。</p>
-                            <p>全部で${nTrials}試行です。できるだけ速く正確に回答してください。</p>`;
-                        } else {
-                            return `<p>今から本試行を始めます。本試行ではフィードバックはありません。</p>
-                            <p>制限時間は${timeLimit}秒です。できるだけ速く正確に回答してください。</p>`;
-                        }
-                    },
-                    on_finish: function(data) {
-                        startTime = data.time_elapsed;
-                    }
+                    stimulus: `<p>今から本試行を始めます。本試行ではフィードバックはありません。</p>
+                        <p>全部で${nTrials}試行です。できるだけ速く正確に回答してください。</p>`,
                 };
                 experiment.push(startMsg);
                 nMax = nTrials;
@@ -257,23 +235,6 @@
                         data.seikai = seikai;
 
                         if (data.honshiko === 0) return; // 練習のときは以下をやらない
-
-                        const time2 = data.time_elapsed - startTime; // 経過時間
-                        console.log(time2);
-
-                        if (typeof timeLimit === "undefined") return; // 試行数で管理しているとき
-                        if (time2 <= timeLimit * 1000) return; // 制限時間内のときは以下をやらない
-
-                        const nTotal = jsPsych.data.get().filter({trial_type: 'html-keyboard-response', honshiko: 1}).count();
-                        const nCorrect = jsPsych.data.get().filter({trial_type: 'html-keyboard-response', honshiko: 1, seikai: 1}).count();
-
-                        jsPsych.data.addProperties({
-                            timeLimit: timeLimit,
-                            total: nTotal,
-                            correct: nCorrect,
-                            incorrect: nTotal - nCorrect
-                        });
-                        jsPsych.endExperiment('<p class="center-content">回答時間を過ぎました。実験の結果が自動的にダウンロードされたか、ダウンロードの画面が表示されます。</p>');
                     }
                 };
                 experiment.push(trial);
