@@ -47,17 +47,12 @@
         let practice_trial_count = jsPsych.data.getURLVariable('practice_trial_count');
         const nPractice = (practice_trial_count === null) ? 10 : Number(practice_trial_count); // 練習試行の回数
 
-        // 黄色の色としてyellowを設定すると見えにくいので数値で指定しています
-        const yellowData = '#ffd900';
-
         // 回答の選択肢
-        // このプログラムでは、赤=1, 青=2, 黄=3, 緑=4, 黒=5　と対応づけしています
+        // このプログラムでは、赤=1, 青=2, 緑=4 と対応づけしています
         const selectCol = [
             {str: 'あか', col: 'red', id: 1},
             {str: 'あお', col: 'blue', id: 2},
-            {str: 'きいろ', col: yellowData, id: 3},
             {str: 'みどり', col: 'green', id: 4},
-            {str: 'くろ', col: 'black', id: 5}
         ];
 
         const patchWidth = 100;
@@ -100,10 +95,10 @@
         experiment.push(form_trial);
 
         const messages = [
-            `<p>この課題では、言葉とインクの色の組み合わせがちぐはぐですが、言葉に惑わされないようにして、インクの色を選択してください。<br>キーボードの数字キー（1〜5）を押して回答します。</p>`,
-            `<p>この課題では、インクの色にあたる言葉を選択してください。<br>キーボードの数字キー（1〜5）を押して回答します。</p>`,
-            `<p>この課題では、言葉とインクの色の組み合わせがちぐはぐですが、インクの色に惑わされないようにして、言葉が意味する色を選択してください。<br>キーボードの数字キー（1〜5）を押して回答します。</p>`,
-            `<p>この課題では、言葉が意味するインクの色を選択してください。<br>キーボードの数字キー（1〜5）を押して回答します。</p>`
+            `<p>この課題では、言葉とインクの色の組み合わせがちぐはぐですが、言葉に惑わされないようにして、インクの色を選択してください。<br>キーボードの数字キー（1〜3）を押して回答します。</p>`,
+            `<p>この課題では、インクの色にあたる言葉を選択してください。<br>キーボードの数字キー（1〜3）を押して回答します。</p>`,
+            `<p>この課題では、言葉とインクの色の組み合わせがちぐはぐですが、インクの色に惑わされないようにして、言葉が意味する色を選択してください。<br>キーボードの数字キー（1〜3）を押して回答します。</p>`,
+            `<p>この課題では、言葉が意味するインクの色を選択してください。<br>キーボードの数字キー（1〜3）を押して回答します。</p>`
         ];
 
         const instruction = `${messages[task - 1]} <p>まずは練習試行を始めます。</p>
@@ -120,46 +115,28 @@
         // 実験刺激の準備
         let stimulus_set = [];
         if (task == 4) {
-            // 逆ストループの統制条件。黒字の色名
+            // 逆ストループの統制条件。黒字の色名（あか・あお・みどりのみ）
             stimulus_set = [
                 {str: 'あか', strID: 1, col: 'black', colID: 5},
                 {str: 'あお', strID: 2, col: 'black', colID: 5},
-                {str: 'きいろ', strID: 3, col: 'black', colID: 5},
                 {str: 'みどり', strID: 4, col: 'black', colID: 5},
-                {str: 'くろ', strID: 5, col: 'black', colID: 5},
             ];
         } else if (task == 3 || task == 1) {
-            // ストループ、逆ストループ。カラフルな文字。文字と色が一致しないこと
+            // ストループ、逆ストループ。カラフルな文字。文字と色が一致しないこと（あか・あお・みどりのみ）
             stimulus_set = [
                 {str: 'あか', strID: 1, col: 'blue', colID: 2},
-                {str: 'あか', strID: 1, col: yellowData, colID: 3},
                 {str: 'あか', strID: 1, col: 'green', colID: 4},
-                {str: 'あか', strID: 1, col: 'black', colID: 5},
                 {str: 'あお', strID: 2, col: 'red', colID: 1},
-                {str: 'あお', strID: 2, col: yellowData, colID: 3},
                 {str: 'あお', strID: 2, col: 'green', colID: 4},
-                {str: 'あお', strID: 2, col: 'black', colID: 5},
-                {str: 'きいろ', strID: 3, col: 'red', colID: 1},
-                {str: 'きいろ', strID: 3, col: 'blue', colID: 2},
-                {str: 'きいろ', strID: 3, col: 'green', colID: 4},
-                {str: 'きいろ', strID: 3, col: 'black', colID: 5},
                 {str: 'みどり', strID: 4, col: 'red', colID: 1},
                 {str: 'みどり', strID: 4, col: 'blue', colID: 2},
-                {str: 'みどり', strID: 4, col: yellowData, colID: 3},
-                {str: 'みどり', strID: 4, col: 'black', colID: 5},
-                {str: 'くろ', strID: 5, col: 'red', colID: 1},
-                {str: 'くろ', strID: 5, col: 'blue', colID: 2},
-                {str: 'くろ', strID: 5, col: yellowData, colID: 3},
-                {str: 'くろ', strID: 5, col: 'green', colID: 4}
             ];
         } else {
-            // ストループの統制条件。色パッチ。文字情報は使わないが互換性のため
+            // ストループの統制条件。色パッチ（あか・あお・みどりのみ）
             stimulus_set = [
                 {str: 'あか', strID: 1, col: 'red', colID: 1},
                 {str: 'あお', strID: 2, col: 'blue', colID: 2},
-                {str: 'きいろ', strID: 3, col: yellowData, colID: 3},
                 {str: 'みどり', strID: 4, col: 'green', colID: 4},
-                {str: 'くろ', strID: 5, col: 'black', colID: 5},
             ];
         }
 
@@ -219,7 +196,7 @@
                 const trial = {
                     type: jsPsychHtmlKeyboardResponse,
                     post_trial_gap: 0,
-                    choices: ['1', '2', '3', '4', '5'],
+                    choices: ['1', '2', '3'],
                     stimulus: stim_html + colScale,
                     data: {
                         honshiko: k,
