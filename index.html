@@ -219,7 +219,9 @@
                         colID: shuffled_stimuli[i].colID,
                         choice: shuffledCol.map(function(c) { return c.id; })
                     },
+                    on_start: function() { setMarkerBlack(); },
                     on_finish: function(data) {
+                        setMarkerWhite();
                         const keyIndex = parseInt(data.response) - 1;
 
                         let correctID = 0;
@@ -261,6 +263,28 @@
             stimulus: '<p class="center-content">すべての試行に回答しました。「次へ」をクリックすると、実験の結果が自動的にダウンロードされるか、ダウンロードの画面が表示されます。</p>',
         };
         experiment.push(endMsg);
+
+        // 白黒マーカー（画面左上 3cm×3cm）
+        // jsPsychの要素より後にappendするため、on_start内で追加する
+        const markerDiv = document.createElement('div');
+        markerDiv.style.cssText = [
+            'position: fixed',
+            'top: 0',
+            'left: 0',
+            'width: 3cm',
+            'height: 3cm',
+            'background-color: white',
+            'z-index: 2147483647',
+            'pointer-events: none',
+        ].join('; ');
+
+        function setMarkerBlack() {
+            if (!document.body.contains(markerDiv)) {
+                document.body.appendChild(markerDiv); // jsPsychのDOMより後に追加
+            }
+            markerDiv.style.backgroundColor = 'black';
+        }
+        function setMarkerWhite() { markerDiv.style.backgroundColor = 'white'; }
 
         // jsPsych 7: jsPsych.init({ timeline: experiment }) → jsPsych.run(experiment)
         document.body.focus();
