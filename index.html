@@ -208,6 +208,14 @@
                     stim_html = '<div style="display: block; margin: auto; background-color: ' + shuffled_stimuli[i].col + '; width: ' + patchWidth + 'px; height: ' + patchHeight + 'px;"></div>';
                 }
 
+                const blankScreen = {
+                    type: jsPsychHtmlKeyboardResponse,
+                    stimulus: '',
+                    choices: 'NO_KEYS',
+                    trial_duration: 1000,
+                };
+                experiment.push(blankScreen);
+
                 const trial = {
                     type: jsPsychHtmlKeyboardResponse,
                     post_trial_gap: 0,
