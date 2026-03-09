@@ -48,11 +48,11 @@
         const nPractice = (practice_trial_count === null) ? 10 : Number(practice_trial_count); // 練習試行の回数
 
         // 回答の選択肢
-        // このプログラムでは、赤=1, 青=2, 緑=4 と対応づけしています
+        // このプログラムでは、赤=1, 青=2, 緑=3 と対応づけしています
         const selectCol = [
             {str: 'あか', col: 'red', id: 1},
             {str: 'あお', col: 'blue', id: 2},
-            {str: 'みどり', col: 'green', id: 4},
+            {str: 'みどり', col: 'green', id: 3},
         ];
 
         const patchWidth = 100;
@@ -119,24 +119,24 @@
             stimulus_set = [
                 {str: 'あか', strID: 1, col: 'black', colID: 5},
                 {str: 'あお', strID: 2, col: 'black', colID: 5},
-                {str: 'みどり', strID: 4, col: 'black', colID: 5},
+                {str: 'みどり', strID: 3, col: 'black', colID: 5},
             ];
         } else if (task == 3 || task == 1) {
             // ストループ、逆ストループ。カラフルな文字。文字と色が一致しないこと（あか・あお・みどりのみ）
             stimulus_set = [
                 {str: 'あか', strID: 1, col: 'blue', colID: 2},
-                {str: 'あか', strID: 1, col: 'green', colID: 4},
+                {str: 'あか', strID: 1, col: 'green', colID: 3},
                 {str: 'あお', strID: 2, col: 'red', colID: 1},
-                {str: 'あお', strID: 2, col: 'green', colID: 4},
-                {str: 'みどり', strID: 4, col: 'red', colID: 1},
-                {str: 'みどり', strID: 4, col: 'blue', colID: 2},
+                {str: 'あお', strID: 2, col: 'green', colID: 3},
+                {str: 'みどり', strID: 3, col: 'red', colID: 1},
+                {str: 'みどり', strID: 3, col: 'blue', colID: 2},
             ];
         } else {
             // ストループの統制条件。色パッチ（あか・あお・みどりのみ）
             stimulus_set = [
                 {str: 'あか', strID: 1, col: 'red', colID: 1},
                 {str: 'あお', strID: 2, col: 'blue', colID: 2},
-                {str: 'みどり', strID: 4, col: 'green', colID: 4},
+                {str: 'みどり', strID: 3, col: 'green', colID: 3},
             ];
         }
 
