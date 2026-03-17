@@ -133,7 +133,7 @@ for (const taskNum of [1, 2, 3, 4]) {
             const strID  = parseInt(r.strID);
             const colID  = parseInt(r.colID);
             const seikai = parseInt(r.seikai);
-            const expected = (taskNum === 3 || taskNum === 4)
+            const expected = (taskNum === 1 || taskNum === 2)
                 ? (kaito === strID ? 1 : 0)
                 : (kaito === colID ? 1 : 0);
             if (seikai !== expected) seikaiErrors++;
