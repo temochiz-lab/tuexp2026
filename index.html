@@ -169,6 +169,8 @@
                     choices: ['次へ'],
                     stimulus: `<p>今から本試行を始めます。本試行ではフィードバックはありません。</p>
                         <p>全部で${nTrials}試行です。できるだけ速く正確に回答してください。</p>`,
+                    on_start: function() { setMarkerBlack(); },  // 本試行開始画面: マーカーを黒に
+                    on_finish: function() { setMarkerWhite(); }, // 次へ押した後: マーカーを白に戻す
                 };
                 experiment.push(startMsg);
                 nMax = nTrials;
@@ -289,8 +291,9 @@
             'width: 3cm',
             'height: 3cm',
             'background-color: white',
-            'z-index: 2147483647',  // z-indexの最大値で最前面を保証
-            'pointer-events: none', // マーカーがクリックを妨げないようにする
+            'border: 2px solid black',  // 白マーカー時に枠線で視認できるようにする
+            'z-index: 2147483647',      // z-indexの最大値で最前面を保証
+            'pointer-events: none',     // マーカーがクリックを妨げないようにする
         ].join('; ');
 
         // 刺激表示中（回答待ち）: マーカーを黒にする
