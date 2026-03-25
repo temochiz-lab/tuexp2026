@@ -27,29 +27,28 @@
         const jsPsych = initJsPsych({
             override_safe_mode: true,
             on_finish: function() {
-                jsPsych.data.get().ignore('stimulus').localSave('csv', myrandID + '-' + task + '.csv');
+                jsPsych.data.get().ignore('stimulus').localSave('csv', myrandID + '-' + tasks.join('-') + '.csv');
             }
         });
 
         // ---- URLパラメータの読み取り ----
-        // 例: index.html?task=1&trial_count=30&practice_trial_count=10
+        // 例: index.html?task=1,2&trials=30&practice=10
         //
-        // task: 課題の種類（デフォルト=1）
+        // task: 課題の種類（コンマ区切りで複数指定可、デフォルト=1）
         //   1 = 黒字の色名に対して色パッチで回答（逆ストループの統制条件）
         //   2 = カラフルな色名に対して色パッチで回答（逆ストループ）
         //   3 = 色パッチに対して黒字の色名で回答（ストループの統制条件）
         //   4 = カラフルな色名に対して黒字の色名で回答（ストループ）
-        let task = jsPsych.data.getURLVariable('task');
-        if (task === null) task = 1;
-        else task = Number(task);
+        const taskParam = jsPsych.data.getURLVariable('task');
+        const tasks = (taskParam === null) ? [1] : taskParam.split(',').map(Number);
 
-        // trial_count: 本番試行の回数（デフォルト=30）
-        let trial_count = jsPsych.data.getURLVariable('trial_count');
-        const nTrials = (trial_count === null) ? 30 : Number(trial_count);
+        // trials: 本番試行の回数（デフォルト=30）
+        const trialsParam = jsPsych.data.getURLVariable('trials');
+        const nTrials = (trialsParam === null) ? 30 : Number(trialsParam);
 
-        // practice_trial_count: 練習試行の回数（デフォルト=10）
-        let practice_trial_count = jsPsych.data.getURLVariable('practice_trial_count');
-        const nPractice = (practice_trial_count === null) ? 10 : Number(practice_trial_count);
+        // practice: 練習試行の回数（デフォルト=10）
+        const practiceParam = jsPsych.data.getURLVariable('practice');
+        const nPractice = (practiceParam === null) ? 10 : Number(practiceParam);
 
         // ---- 回答の選択肢 ----
         // 色の名前・表示色・IDの対応。赤=1, 青=2, 緑=3
@@ -95,8 +94,7 @@
                 jsPsych.data.addProperties({
                     date: getDateStr(),
                     randomID: myrandID,
-                    task: task
-                });
+                }); // task は各試行の data オブジェクトに個別設定
             }
         };
         experiment.push(form_trial);
@@ -109,175 +107,182 @@
             `<p>この課題では、言葉とインクの色の組み合わせがちぐはぐですが、言葉に惑わされないようにして、インクの色を選択してください。<br>「色の名前」をキーボードの数字キー（1〜3）を押して回答します。</p>`
         ];
 
-        const instruction = `${messages[task - 1]} <p>まずは練習試行を始めます。</p>
-            <p>練習試行ではあなたの回答が正しかったかどうかについてのフィードバックがあります。<br>
-            練習試行は${nPractice}試行です。</p>`;
+        // ---- タスクループ（各タスクに対して教示・練習・本番試行を生成）----
+        for (const task of tasks) {
 
-        const instruction1 = {
-            type: jsPsychHtmlButtonResponse,
-            choices: ['次へ'],
-            stimulus: instruction,
-        };
-        experiment.push(instruction1);
+            // 教示文（このタスクの内容説明 + 練習試行の案内）
+            const instruction = `${messages[task - 1]} <p>まずは練習試行を始めます。</p>
+                <p>練習試行ではあなたの回答が正しかったかどうかについてのフィードバックがあります。<br>
+                練習試行は${nPractice}試行です。</p>`;
 
-        // ---- 刺激セットの定義 ----
-        // str: 表示する文字列, strID: 文字が表す色のID
-        // col: インク色（CSSカラー）, colID: インク色のID
-        // task 1/3 では strID ≠ colID（文字と色が不一致）
-        let stimulus_set = [];
-        if (task == 1) {
-            // 逆ストループの統制条件: 黒字の色名
-            stimulus_set = [
-                {str: 'あか', strID: 1, col: 'black', colID: 5},
-                {str: 'あお', strID: 2, col: 'black', colID: 5},
-                {str: 'みどり', strID: 3, col: 'black', colID: 5},
-            ];
-        } else if (task == 2 || task == 4) {
-            // 逆ストループ・ストループ: カラフルな文字（文字と色が不一致）
-            stimulus_set = [
-                {str: 'あか', strID: 1, col: 'blue', colID: 2},
-                {str: 'あか', strID: 1, col: 'green', colID: 3},
-                {str: 'あお', strID: 2, col: 'red', colID: 1},
-                {str: 'あお', strID: 2, col: 'green', colID: 3},
-                {str: 'みどり', strID: 3, col: 'red', colID: 1},
-                {str: 'みどり', strID: 3, col: 'blue', colID: 2},
-            ];
-        } else {
-            // task == 3: ストループの統制条件: 色パッチ
-            stimulus_set = [
-                {str: 'あか', strID: 1, col: 'red', colID: 1},
-                {str: 'あお', strID: 2, col: 'blue', colID: 2},
-                {str: 'みどり', strID: 3, col: 'green', colID: 3},
-            ];
-        }
+            const instruction1 = {
+                type: jsPsychHtmlButtonResponse,
+                choices: ['次へ'],
+                stimulus: instruction,
+                on_start: function() { hideMarker(); }, // 前タスクの本番試行終了時にマーカーを非表示
+            };
+            experiment.push(instruction1);
 
-        // ---- 練習試行（k=0）と本番試行（k=1）のループ ----
-        for (let k = 0; k < 2; k++) {
-            const all_stimuli = [];
-
-            // 刺激セットを1回分シャッフルし、試行数に合わせて並び順の基礎を作る
-            const tmp_shuffled = jsPsych.randomization.repeat(stimulus_set, 1);
-
-            let nMax = 0;
-            if (k == 0) {
-                // 練習試行: 指定回数分の刺激リストを作る
-                nMax = nPractice;
+            // ---- 刺激セットの定義 ----
+            // str: 表示する文字列, strID: 文字が表す色のID
+            // col: インク色（CSSカラー）, colID: インク色のID
+            // task 1/3 では strID ≠ colID（文字と色が不一致）
+            let stimulus_set = [];
+            if (task == 1) {
+                // 逆ストループの統制条件: 黒字の色名
+                stimulus_set = [
+                    {str: 'あか', strID: 1, col: 'black', colID: 5},
+                    {str: 'あお', strID: 2, col: 'black', colID: 5},
+                    {str: 'みどり', strID: 3, col: 'black', colID: 5},
+                ];
+            } else if (task == 2 || task == 4) {
+                // 逆ストループ・ストループ: カラフルな文字（文字と色が不一致）
+                stimulus_set = [
+                    {str: 'あか', strID: 1, col: 'blue', colID: 2},
+                    {str: 'あか', strID: 1, col: 'green', colID: 3},
+                    {str: 'あお', strID: 2, col: 'red', colID: 1},
+                    {str: 'あお', strID: 2, col: 'green', colID: 3},
+                    {str: 'みどり', strID: 3, col: 'red', colID: 1},
+                    {str: 'みどり', strID: 3, col: 'blue', colID: 2},
+                ];
             } else {
-                // 本番試行: 開始メッセージを追加
-                const startMsg = {
-                    type: jsPsychHtmlButtonResponse,
-                    choices: ['次へ'],
-                    stimulus: `<p>今から本試行を始めます。本試行ではフィードバックはありません。</p>
-                        <p>全部で${nTrials}試行です。できるだけ速く正確に回答してください。</p>`,
-                    on_start: function() { setMarkerBlack(); },  // 本試行開始画面: マーカーを黒に
-                    on_finish: function() { setMarkerWhite(); }, // 次へ押した後: マーカーを白に戻す
-                };
-                experiment.push(startMsg);
-                nMax = nTrials;
+                // task == 3: ストループの統制条件: 色パッチ
+                stimulus_set = [
+                    {str: 'あか', strID: 1, col: 'red', colID: 1},
+                    {str: 'あお', strID: 2, col: 'blue', colID: 2},
+                    {str: 'みどり', strID: 3, col: 'green', colID: 3},
+                ];
             }
 
-            // 必要な試行数分、刺激セットを循環させてリストを作る
-            for (let i = 0; i < nMax; i++) {
-                all_stimuli.push(tmp_shuffled[i % stimulus_set.length]);
-            }
+            // ---- 練習試行（k=0）と本番試行（k=1）のループ ----
+            for (let k = 0; k < 2; k++) {
+                const all_stimuli = [];
 
-            // 試行順をシャッフル
-            const shuffled_stimuli = jsPsych.randomization.repeat(all_stimuli, 1);
+                // 刺激セットを1回分シャッフルし、試行数に合わせて並び順の基礎を作る
+                const tmp_shuffled = jsPsych.randomization.repeat(stimulus_set, 1);
 
-            // ---- 各試行の生成 ----
-            for (let i = 0; i < shuffled_stimuli.length; i++) {
-
-                // 選択肢の表示順を試行ごとにシャッフル
-                const shuffledCol = jsPsych.randomization.repeat(selectCol, 1);
-
-                // 選択肢HTML（task 1/2: 色パッチ、task 3/4: 色名テキスト）
-                let colScale = '';
-                if (task == 1 || task == 2) {
-                    colScale = makeColScale(shuffledCol, 2); // 色パッチの選択肢
-                } else {
-                    colScale = makeColScale(shuffledCol, 1); // 色名（文字）の選択肢
-                }
-
-                // 刺激HTML（task 1/2/4: 文字、task 3: 色パッチ）
-                let stim_html = '';
-                if (task == 1 || task == 2 || task == 4) {
-                    stim_html = '<p style="color: ' + shuffled_stimuli[i].col + '; text-align: center; font-size:' + fontSize1 + 'px;">' + shuffled_stimuli[i].str + '</p>';
-                } else {
-                    // task == 3: 色パッチを刺激として表示
-                    stim_html = '<div style="display: block; margin: auto; background-color: ' + shuffled_stimuli[i].col + '; width: ' + patchWidth + 'px; height: ' + patchHeight + 'px;"></div>';
-                }
-
-                // 試行前の注視点（1秒間 * を表示）
-                const blankScreen = {
-                    type: jsPsychHtmlKeyboardResponse,
-                    stimulus: '<p style="text-align: center; font-size: 36px;">＊</p>',
-                    choices: 'NO_KEYS',
-                    trial_duration: 1000,
-                    on_start: function() { if (k === 1) setMarkerWhite(); }, // 注視点表示開始: マーカーを白に（本試行のみ）
-                };
-                experiment.push(blankScreen);
-
-                // 本試行（刺激 + 選択肢を表示し、数字キー1〜3で回答）
-                const trial = {
-                    type: jsPsychHtmlKeyboardResponse,
-                    post_trial_gap: 0,
-                    choices: ['1', '2', '3'],
-                    stimulus: stim_html + colScale,
-                    data: {
-                        honshiko: k,                                         // 0=練習, 1=本番
-                        strID: shuffled_stimuli[i].strID,                    // 文字が表す色のID
-                        colID: shuffled_stimuli[i].colID,                    // インク色のID
-                        choice: shuffledCol.map(function(c) { return c.id; }) // 表示順の選択肢IDリスト
-                    },
-                    on_start: function() { if (k === 1) setMarkerWhite(); }, // 刺激表示開始: マーカーを白に（本試行のみ）
-                    on_finish: function(data) {
-                        if (k === 1) setMarkerBlack(); // 回答直後: マーカーを黒に（ポーズ期間・本試行のみ）
-
-                        // 押されたキー（'1'〜'3'）を0始まりのインデックスに変換
-                        const keyIndex = parseInt(data.response) - 1;
-
-                        // 正解IDの決定（task 1/2: 文字の意味、task 3/4: インクの色）
-                        let correctID = 0;
-                        if (task == 1 || task == 2) {
-                            correctID = data.strID;
-                        } else {
-                            correctID = data.colID;
-                        }
-
-                        // 正誤判定（回答した色IDと正解IDを照合）
-                        const seikai = (data.choice[keyIndex] === correctID) ? 1 : 0;
-
-                        // データに回答情報を追加
-                        data.Q0 = keyIndex;               // 選択肢の何番目を選んだか（0始まり）
-                        data.kaito = data.choice[keyIndex]; // 回答した色のID
-                        data.seikai = seikai;              // 正誤（1=正解, 0=不正解）
-
-                        if (data.honshiko === 0) return; // 練習試行はここで終了
-                    }
-                };
-                experiment.push(trial);
-
-                // フィードバック（練習試行のみ。スペースキーで次へ）
-                const feedBack = {
-                    type: jsPsychHtmlKeyboardResponse,
-                    choices: [' '],
-                    post_trial_gap: 0,
-                    stimulus: function() {
-                        return `<p class="center-content">${getCorrectness()}</p><p class="center-content">スペースキーで次へ行きます</p>`;
-                    },
-                };
-
+                let nMax = 0;
                 if (k == 0) {
-                    experiment.push(feedBack);
+                    // 練習試行: 指定回数分の刺激リストを作る
+                    nMax = nPractice;
+                } else {
+                    // 本番試行: 開始メッセージを追加
+                    const startMsg = {
+                        type: jsPsychHtmlButtonResponse,
+                        choices: ['次へ'],
+                        stimulus: `<p>今から本試行を始めます。本試行ではフィードバックはありません。</p>
+                            <p>全部で${nTrials}試行です。できるだけ速く正確に回答してください。</p>`,
+                        on_start: function() { setMarkerBlack(); },  // 本試行開始画面: マーカーを黒に
+                    };
+                    experiment.push(startMsg);
+                    nMax = nTrials;
+                }
+
+                // 必要な試行数分、刺激セットを循環させてリストを作る
+                for (let i = 0; i < nMax; i++) {
+                    all_stimuli.push(tmp_shuffled[i % stimulus_set.length]);
+                }
+
+                // 試行順をシャッフル
+                const shuffled_stimuli = jsPsych.randomization.repeat(all_stimuli, 1);
+
+                // ---- 各試行の生成 ----
+                for (let i = 0; i < shuffled_stimuli.length; i++) {
+
+                    // 選択肢の表示順を試行ごとにシャッフル
+                    const shuffledCol = jsPsych.randomization.repeat(selectCol, 1);
+
+                    // 選択肢HTML（task 1/2: 色パッチ、task 3/4: 色名テキスト）
+                    let colScale = '';
+                    if (task == 1 || task == 2) {
+                        colScale = makeColScale(shuffledCol, 2); // 色パッチの選択肢
+                    } else {
+                        colScale = makeColScale(shuffledCol, 1); // 色名（文字）の選択肢
+                    }
+
+                    // 刺激HTML（task 1/2/4: 文字、task 3: 色パッチ）
+                    let stim_html = '';
+                    if (task == 1 || task == 2 || task == 4) {
+                        stim_html = '<p style="color: ' + shuffled_stimuli[i].col + '; text-align: center; font-size:' + fontSize1 + 'px;">' + shuffled_stimuli[i].str + '</p>';
+                    } else {
+                        // task == 3: 色パッチを刺激として表示
+                        stim_html = '<div style="display: block; margin: auto; background-color: ' + shuffled_stimuli[i].col + '; width: ' + patchWidth + 'px; height: ' + patchHeight + 'px;"></div>';
+                    }
+
+                    // 試行前の注視点（1秒間 * を表示）
+                    const blankScreen = {
+                        type: jsPsychHtmlKeyboardResponse,
+                        stimulus: '<p style="text-align: center; font-size: 36px;">＊</p>',
+                        choices: 'NO_KEYS',
+                        trial_duration: 1000,
+                        on_start: function() { if (k === 1) setMarkerBlack(); }, // 注視点表示開始（次の問題）: マーカーを黒に（本試行のみ）
+                    };
+                    experiment.push(blankScreen);
+
+                    // 本試行（刺激 + 選択肢を表示し、数字キー1〜3で回答）
+                    const trial = {
+                        type: jsPsychHtmlKeyboardResponse,
+                        post_trial_gap: 0,
+                        choices: ['1', '2', '3'],
+                        stimulus: stim_html + colScale,
+                        data: {
+                            task: task,                                          // タスク番号
+                            honshiko: k,                                         // 0=練習, 1=本番
+                            strID: shuffled_stimuli[i].strID,                    // 文字が表す色のID
+                            colID: shuffled_stimuli[i].colID,                    // インク色のID
+                            choice: shuffledCol.map(function(c) { return c.id; }) // 表示順の選択肢IDリスト
+                        },
+                        on_start: function() { if (k === 1) setMarkerWhite(); }, // 刺激表示開始: マーカーを白に（本試行のみ）
+                        on_finish: function(data) {
+                            if (k === 1) setMarkerBlack(); // 回答直後: マーカーを黒に（ポーズ期間・本試行のみ）
+
+                            // 押されたキー（'1'〜'3'）を0始まりのインデックスに変換
+                            const keyIndex = parseInt(data.response) - 1;
+
+                            // 正解IDの決定（task 1/2: 文字の意味、task 3/4: インクの色）
+                            let correctID = 0;
+                            if (task == 1 || task == 2) {
+                                correctID = data.strID;
+                            } else {
+                                correctID = data.colID;
+                            }
+
+                            // 正誤判定（回答した色IDと正解IDを照合）
+                            const seikai = (data.choice[keyIndex] === correctID) ? 1 : 0;
+
+                            // データに回答情報を追加
+                            data.Q0 = keyIndex;               // 選択肢の何番目を選んだか（0始まり）
+                            data.kaito = data.choice[keyIndex]; // 回答した色のID
+                            data.seikai = seikai;              // 正誤（1=正解, 0=不正解）
+
+                            if (data.honshiko === 0) return; // 練習試行はここで終了
+                        }
+                    };
+                    experiment.push(trial);
+
+                    // フィードバック（練習試行のみ。スペースキーで次へ）
+                    const feedBack = {
+                        type: jsPsychHtmlKeyboardResponse,
+                        choices: [' '],
+                        post_trial_gap: 0,
+                        stimulus: function() {
+                            return `<p class="center-content">${getCorrectness()}</p><p class="center-content">スペースキーで次へ行きます</p>`;
+                        },
+                    };
+
+                    if (k == 0) {
+                        experiment.push(feedBack);
+                    }
                 }
             }
-        }
+        } // タスクループ終了
 
         // 全試行完了メッセージ
         const endMsg = {
             type: jsPsychHtmlButtonResponse,
             choices: ['次へ'],
             stimulus: '<p class="center-content">すべての試行に回答しました。「次へ」をクリックすると、実験の結果が自動的にダウンロードされるか、ダウンロードの画面が表示されます。</p>',
+            on_start: function() { hideMarker(); }, // 最後のタスクの本番試行終了時にマーカーを非表示
         };
         experiment.push(endMsg);
 
@@ -302,11 +307,15 @@
             if (!document.body.contains(markerDiv)) {
                 document.body.appendChild(markerDiv); // jsPsychのDOMより後に追加
             }
+            markerDiv.style.display = '';             // hideMarker() 後の再表示に備えてリセット
             markerDiv.style.backgroundColor = 'black';
         }
 
         // 回答後・待機中: マーカーを白にする
         function setMarkerWhite() { markerDiv.style.backgroundColor = 'white'; }
+
+        // 本番試行終了時: マーカーを非表示にする
+        function hideMarker() { markerDiv.style.display = 'none'; }
 
         document.body.focus();
         jsPsych.run(experiment);
