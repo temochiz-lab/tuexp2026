@@ -124,3 +124,6 @@ https://temochiz-lab.github.io/tuexp2026/index.html?task=1&trials=30&practice=10
 | タスク2、本番30回、練習5回 | `?task=2&trials=30&practice=5` |
 | タスク1→2の順に実施 | `?task=1,2&trials=30&practice=10` |
 | 動作確認用（各3回） | `?task=1,2&trials=3&practice=3` |
+| Task1を60試行続ける | `?task=1&trials=60` |
+| Task1と3を30試行ずつ実施 | `?task=1,3&trials=30` |
+| Task2と4を30試行ずつ交互に2回実施 | `?task=2,4,2,4&trials=30` |
