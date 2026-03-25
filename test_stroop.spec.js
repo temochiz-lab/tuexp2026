@@ -63,13 +63,13 @@ for (const taskNum of [1, 2, 3, 4]) {
         console.log(`練習試行 ${PRACTICE_COUNT} 回...`);
         for (let i = 0; i < PRACTICE_COUNT; i++) {
             await page.waitForTimeout(1200); // 注視点（1秒）
-            // マーカーが黒になっているか確認
-            const markerCol = await page.evaluate(() => {
+            // 練習試行ではマーカーがDOMに存在しないことを確認
+            const markerColPractice = await page.evaluate(() => {
                 const el = Array.from(document.querySelectorAll('div'))
                     .find(d => d.style.zIndex === '2147483647');
                 return el ? window.getComputedStyle(el).backgroundColor : null;
             });
-            expect(markerCol).toBe('rgb(0, 0, 0)');
+            expect(markerColPractice).toBeNull(); // 練習試行はマーカーなし
             await page.keyboard.press('1'); // キー1で回答
             await page.waitForTimeout(300);
             await page.keyboard.press(' '); // フィードバック → 次へ
@@ -78,20 +78,29 @@ for (const taskNum of [1, 2, 3, 4]) {
 
         // ---- 本試行開始メッセージ ----
         await expect(page.getByText('本試行を始めます')).toBeVisible();
+        // 開始画面でマーカーが黒（■）であることを確認
+        const markerColStart = await page.evaluate(() => {
+            const el = Array.from(document.querySelectorAll('div'))
+                .find(d => d.style.zIndex === '2147483647');
+            return el ? window.getComputedStyle(el).backgroundColor : null;
+        });
+        expect(markerColStart).toBe('rgb(0, 0, 0)'); // 開始画面は■黒
         await page.getByRole('button', { name: '次へ' }).click();
         await page.waitForTimeout(300);
 
         // ---- 本試行 ----
         console.log(`本試行 ${TRIAL_COUNT} 回...`);
         for (let i = 0; i < TRIAL_COUNT; i++) {
-            await page.waitForTimeout(1200); // 注視点（1秒）
-            const markerCol = await page.evaluate(() => {
+            await page.waitForTimeout(1200); // 注視点（1秒）+ 刺激表示開始
+            // 問題表示中はマーカーが白（□）であることを確認
+            const markerColStim = await page.evaluate(() => {
                 const el = Array.from(document.querySelectorAll('div'))
                     .find(d => d.style.zIndex === '2147483647');
                 return el ? window.getComputedStyle(el).backgroundColor : null;
             });
-            expect(markerCol).toBe('rgb(0, 0, 0)');
+            expect(markerColStim).toBe('rgb(255, 255, 255)'); // 問題表示は□白
             await page.keyboard.press('2'); // キー2で回答
+            // 回答後の■黒はpost_trial_gap=0のため瞬時に次の注視点□白へ切り替わるため非検証
             await page.waitForTimeout(300);
         }
 
