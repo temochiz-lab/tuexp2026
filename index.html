@@ -31,6 +31,8 @@
             }
         });
 
+        // 2026-03-25 10:36
+
         // ---- URLパラメータの読み取り ----
         // 例: index.html?task=1,2&trials=30&practice=10
         //
@@ -40,15 +42,15 @@
         //   3 = 色パッチに対して黒字の色名で回答（ストループの統制条件）
         //   4 = カラフルな色名に対して黒字の色名で回答（ストループ）
         const taskParam = jsPsych.data.getURLVariable('task');
-        const tasks = (taskParam === null) ? [1] : taskParam.split(',').map(Number);
+        const tasks = (taskParam == null) ? [1] : taskParam.split(',').map(Number);
 
         // trials: 本番試行の回数（デフォルト=30）
         const trialsParam = jsPsych.data.getURLVariable('trials');
-        const nTrials = (trialsParam === null) ? 30 : Number(trialsParam);
+        const nTrials = (trialsParam == null) ? 30 : Number(trialsParam);
 
         // practice: 練習試行の回数（デフォルト=10）
         const practiceParam = jsPsych.data.getURLVariable('practice');
-        const nPractice = (practiceParam === null) ? 10 : Number(practiceParam);
+        const nPractice = (practiceParam == null) ? 10 : Number(practiceParam);
 
         // ---- 回答の選択肢 ----
         // 色の名前・表示色・IDの対応。赤=1, 青=2, 緑=3
