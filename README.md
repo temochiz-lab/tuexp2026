@@ -1,2 +1,129 @@
-# tuexp2026
-tuexp2026
+# ストループ実験プログラム使用マニュアル
+
+ストループ課題・逆ストループ課題を実施するWebアプリケーションです。
+
+## 起動方法
+
+ブラウザで `index.html` を開きます。URLパラメータで課題の種類・試行数を指定します。
+
+```
+index.html?task=1&trials=30&practice=10
+```
+
+GitHub Pages での公開URLの場合：
+
+```
+https://temochiz-lab.github.io/tuexp2026/index.html?task=1&trials=30&practice=10
+```
+
+---
+
+## URLパラメータ
+
+| パラメータ | 説明 | デフォルト |
+|---|---|---|
+| `task` | タスク番号（コンマ区切りで複数指定可） | `1` |
+| `trials` | 本番試行の回数 | `30` |
+| `practice` | 練習試行の回数 | `10` |
+
+### task の種類
+
+| 番号 | 刺激 | 選択肢 | 課題の種類 |
+|---|---|---|---|
+| 1 | 黒字の色名（あか・あお・みどり） | 色パッチ | 逆ストループ 統制条件 |
+| 2 | カラフルな色名（文字色≠意味） | 色パッチ | 逆ストループ |
+| 3 | 色パッチ | 色名テキスト | ストループ 統制条件 |
+| 4 | カラフルな色名（文字色≠意味） | 色名テキスト | ストループ |
+
+### 複数タスクの指定
+
+コンマ区切りで複数のタスクを連続実施できます。タスクは指定した順に実施されます。
+
+```
+?task=1,2&trials=30&practice=10
+```
+
+実施順序：タスク1の練習 → タスク1の本番 → タスク2の練習 → タスク2の本番
+
+---
+
+## 実験の流れ
+
+1. **性別・年齢の入力**
+2. タスクごとに以下を繰り返す：
+   1. **教示画面**（課題の説明）→「次へ」
+   2. **練習試行**（`practice` 回）：回答後に正誤フィードバック、スペースキーで次へ
+   3. **本番試行開始画面**→「次へ」
+   4. **本番試行**（`trials` 回）：フィードバックなし
+3. **終了画面**→「次へ」でCSVが自動ダウンロード
+
+### 各試行の流れ
+
+```
+注視点（＊、1秒） → 刺激＋選択肢表示 → キー1〜3で回答
+```
+
+- 選択肢の表示順は試行ごとにランダムシャッフルされます
+- 刺激セットもランダムシャッフルされます
+
+---
+
+## 回答方法
+
+キーボードの数字キー **1・2・3** で、画面上の選択肢（左から1・2・3）を選択します。
+
+---
+
+## 出力ファイル（CSV）
+
+実験終了後、CSVファイルが自動ダウンロードされます。
+
+**ファイル名：** `[ランダムID]-[タスク番号].csv`
+（例：`ab12cd34-1.csv`、複数タスクの場合は `ab12cd34-1-2.csv`）
+
+### 主なCSV列
+
+| 列名 | 内容 |
+|---|---|
+| `randomID` | 参加者ごとのランダムID（8文字） |
+| `date` | 実験実施日時 |
+| `gender` | 性別（1=男性、2=女性、3=その他） |
+| `age` | 年齢 |
+| `task` | タスク番号（1〜4） |
+| `honshiko` | 0=練習試行、1=本番試行 |
+| `strID` | 文字が表す色のID（赤=1、青=2、緑=3） |
+| `colID` | インク色のID（赤=1、青=2、緑=3、黒=5） |
+| `choice` | 選択肢の表示順（IDのリスト） |
+| `Q0` | 何番目の選択肢を選んだか（0始まり） |
+| `kaito` | 回答した色のID |
+| `seikai` | 正誤（1=正解、0=不正解） |
+| `rt` | 反応時間（ミリ秒） |
+
+---
+
+## 白黒マーカー
+
+画面左上に 3cm×3cm の白黒マーカーが表示されます（生理指標計測との同期用）。
+
+**本番試行のみ動作します。**
+
+| タイミング | マーカー |
+|---|---|
+| 本番試行開始画面 | ■ 黒 |
+| 注視点（＊）表示中 | ■ 黒 |
+| 刺激表示・回答中 | □ 白 |
+| 教示画面・終了画面 | 非表示 |
+
+---
+
+## 記述例
+
+| 使用例 | パラメーター | リンク |
+|---|---|---|
+| タスク1のみ、デフォルト設定 | `?task=1` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1" target="_blank">Clickで開始</a> |
+| タスク2、本番30回、練習5回 | `?task=2&trials=30&practice=5` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=2&trials=30&practice=5" target="_blank">Clickで開始</a> |
+| タスク1→2の順に実施 | `?task=1,2&trials=30&practice=10` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1,2&trials=30&practice=10" target="_blank">Clickで開始</a> |
+| 動作確認用（各3回） | `?task=1,2&trials=3&practice=3` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1,2&trials=3&practice=3" target="_blank">Clickで開始</a> |
+| Task1を60試行続ける | `?task=1&trials=60` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1&trials=60" target="_blank">Clickで開始</a> |
+| Task1と3を30試行ずつ実施 | `?task=1,3&trials=30` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1,3&trials=30" target="_blank">Clickで開始</a> |
+| Task2と4を30試行ずつ交互に2回実施 | `?task=2,4,2,4&trials=30` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=2,4,2,4&trials=30" target="_blank">Clickで開始</a> |
