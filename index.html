@@ -213,6 +213,7 @@
                     stimulus: '<p style="text-align: center; font-size: 36px;">＊</p>',
                     choices: 'NO_KEYS',
                     trial_duration: 1000,
+                    on_start: function() { setMarkerWhite(); }, // 注視点表示開始: マーカーを白に
                 };
                 experiment.push(blankScreen);
 
@@ -228,9 +229,9 @@
                         colID: shuffled_stimuli[i].colID,                    // インク色のID
                         choice: shuffledCol.map(function(c) { return c.id; }) // 表示順の選択肢IDリスト
                     },
-                    on_start: function() { setMarkerBlack(); }, // 刺激表示開始: マーカーを黒に
+                    on_start: function() { setMarkerWhite(); }, // 刺激表示開始: マーカーを白に
                     on_finish: function(data) {
-                        setMarkerWhite(); // 回答直後: マーカーを白に戻す
+                        setMarkerBlack(); // 回答直後: マーカーを黒に（ポーズ期間）
 
                         // 押されたキー（'1'〜'3'）を0始まりのインデックスに変換
                         const keyIndex = parseInt(data.response) - 1;
