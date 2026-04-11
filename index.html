@@ -238,8 +238,6 @@
                         },
                         on_start: function() { if (k === 1) setMarkerWhite(); }, // 刺激表示開始: マーカーを白に（本試行のみ）
                         on_finish: function(data) {
-                            if (k === 1) setMarkerBlack(); // 回答直後: マーカーを黒に（次の注視点まで・本試行のみ）
-
                             // 押されたキー（'1'〜'3'）を0始まりのインデックスに変換
                             const keyIndex = parseInt(data.response) - 1;
 
@@ -306,7 +304,7 @@
             'pointer-events: none',     // マーカーがクリックを妨げないようにする
         ].join('; ');
 
-        // マーカーを黒（■）にする: 本試行開始画面・注視点・回答直後に呼び出す
+        // マーカーを黒（■）にする: 本試行開始画面・注視点表示開始時に呼び出す
         function setMarkerBlack() {
             if (!document.body.contains(markerDiv)) {
                 document.body.appendChild(markerDiv); // jsPsychのDOMより後に追加
