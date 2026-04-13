@@ -121,9 +121,10 @@ https://temochiz-lab.github.io/tuexp2026/index.html?task=1&trials=30&practice=10
 | 使用例 | パラメーター | リンク |
 |---|---|---|
 | タスク1のみ、デフォルト設定 | `?task=1` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1" target="_blank">Clickで開始</a> |
-| タスク2、本番30回、練習5回 | `?task=2&trials=30&practice=5` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=2&trials=30&practice=5" target="_blank">Clickで開始</a> |
+| タスク2、本番30回、練習3回 | `?task=2&trials=30&practice=5` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=2&trials=30&practice=3" target="_blank">Clickで開始</a> |
 | タスク1→2の順に実施 | `?task=1,2&trials=30&practice=10` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1,2&trials=30&practice=10" target="_blank">Clickで開始</a> |
 | 動作確認用（各3回） | `?task=1,2&trials=3&practice=3` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1,2&trials=3&practice=3" target="_blank">Clickで開始</a> |
 | Task1を60試行続ける | `?task=1&trials=60` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1&trials=60" target="_blank">Clickで開始</a> |
 | Task1と3を30試行ずつ実施 | `?task=1,3&trials=30` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1,3&trials=30" target="_blank">Clickで開始</a> |
 | Task2と4を30試行ずつ交互に2回実施 | `?task=2,4,2,4&trials=30` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=2,4,2,4&trials=30" target="_blank">Clickで開始</a> |
+
