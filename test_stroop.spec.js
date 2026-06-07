@@ -87,8 +87,8 @@ async function runTask(page, taskNum, isFirstTask = false) {
     // 本試行
     console.log(`  task=${taskNum} 本試行 ${TRIAL_COUNT} 回...`);
     for (let i = 0; i < TRIAL_COUNT; i++) {
-        const blankMarkerColor = i % 2 === 0 ? 'rgb(0, 0, 0)' : 'rgb(255, 255, 255)';
-        const stimulusMarkerColor = i % 2 === 0 ? 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)';
+        const blankMarkerColor = i % 2 === 0 ? 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)';
+        const stimulusMarkerColor = i % 2 === 0 ? 'rgb(0, 0, 0)' : 'rgb(255, 255, 255)';
         await page.waitForTimeout(500); // 注視点表示中（1秒のうち500ms経過）
         // 注視点中は試行番号の偶奇に応じてマーカー色が切り替わる
         expect(await getMarkerColor(page)).toBe(blankMarkerColor);
@@ -127,7 +127,7 @@ for (const taskList of TASK_PAIRS) {
 
         // ---- 終了メッセージ & CSVダウンロード ----
         await expect(page.getByText('すべての試行に回答しました')).toBeVisible();
-        const finalStimulusMarkerColor = (TRIAL_COUNT - 1) % 2 === 0 ? 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)';
+        const finalStimulusMarkerColor = (TRIAL_COUNT - 1) % 2 === 0 ? 'rgb(0, 0, 0)' : 'rgb(255, 255, 255)';
         const endMarkerColor = finalStimulusMarkerColor === 'rgb(0, 0, 0)' ? 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)';
         expect(await isMarkerHidden(page)).toBe(false); // 終了メッセージ画面でもマーカーは表示し続ける
         expect(await getMarkerColor(page)).toBe(endMarkerColor);
