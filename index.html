@@ -276,6 +276,17 @@
                         experiment.push(feedBack);
                     }
                 }
+
+                if (k == 1) {
+                    // 各タスクの本試行終了後、最終回答時のマーカー色を1秒保持する
+                    const taskEndBuffer = {
+                        type: jsPsychHtmlKeyboardResponse,
+                        stimulus: '',
+                        choices: 'NO_KEYS',
+                        trial_duration: 1000,
+                    };
+                    experiment.push(taskEndBuffer);
+                }
             }
         } // タスクループ終了
 
@@ -284,7 +295,7 @@
             type: jsPsychHtmlButtonResponse,
             choices: ['次へ'],
             stimulus: '<p class="center-content">すべての試行に回答しました。「次へ」をクリックすると、実験の結果が自動的にダウンロードされるか、ダウンロードの画面が表示されます。</p>',
-            on_start: function() { hideMarker(); }, // 最後のタスクの本番試行終了時にマーカーを非表示
+            on_start: function() { invertMarker(); }, // 終了シグナルとして反転色を永続表示
         };
         experiment.push(endMsg);
 
@@ -315,6 +326,16 @@
 
         // マーカーを白（□）にする: 刺激表示開始時に呼び出す
         function setMarkerWhite() { markerDiv.style.backgroundColor = 'white'; }
+
+        // 終了時: 最終回答時の色から反転させ、反転後の色を表示し続ける
+        function invertMarker() {
+            if (!document.body.contains(markerDiv)) {
+                document.body.appendChild(markerDiv);
+            }
+            markerDiv.style.display = '';
+            markerDiv.style.backgroundColor =
+                markerDiv.style.backgroundColor === 'black' ? 'white' : 'black';
+        }
 
         // 本番試行終了時: マーカーを非表示にする
         function hideMarker() { markerDiv.style.display = 'none'; }

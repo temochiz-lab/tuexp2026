@@ -87,12 +87,14 @@ async function runTask(page, taskNum, isFirstTask = false) {
     // 本試行
     console.log(`  task=${taskNum} 本試行 ${TRIAL_COUNT} 回...`);
     for (let i = 0; i < TRIAL_COUNT; i++) {
+        const blankMarkerColor = i % 2 === 0 ? 'rgb(0, 0, 0)' : 'rgb(255, 255, 255)';
+        const stimulusMarkerColor = i % 2 === 0 ? 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)';
         await page.waitForTimeout(500); // 注視点表示中（1秒のうち500ms経過）
-        // 注視点中（次の問題）はマーカーが黒（■）であることを確認
-        expect(await getMarkerColor(page)).toBe('rgb(0, 0, 0)');
+        // 注視点中は試行番号の偶奇に応じてマーカー色が切り替わる
+        expect(await getMarkerColor(page)).toBe(blankMarkerColor);
         await page.waitForTimeout(700); // 注視点終了 + 刺激表示開始（計1200ms）
-        // 問題表示中はマーカーが白（□）であることを確認
-        expect(await getMarkerColor(page)).toBe('rgb(255, 255, 255)');
+        // 問題表示中は注視点中と逆のマーカー色になる
+        expect(await getMarkerColor(page)).toBe(stimulusMarkerColor);
         await page.keyboard.press('2');
         // 回答後■黒になるがpost_trial_gap=0のため次の注視点■黒へ即移行するため非検証
         await page.waitForTimeout(300);
@@ -125,7 +127,10 @@ for (const taskList of TASK_PAIRS) {
 
         // ---- 終了メッセージ & CSVダウンロード ----
         await expect(page.getByText('すべての試行に回答しました')).toBeVisible();
-        expect(await isMarkerHidden(page)).toBe(true); // 終了メッセージ画面ではマーカー非表示
+        const finalStimulusMarkerColor = (TRIAL_COUNT - 1) % 2 === 0 ? 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)';
+        const endMarkerColor = finalStimulusMarkerColor === 'rgb(0, 0, 0)' ? 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)';
+        expect(await isMarkerHidden(page)).toBe(false); // 終了メッセージ画面でもマーカーは表示し続ける
+        expect(await getMarkerColor(page)).toBe(endMarkerColor);
         const downloadPromise = page.waitForEvent('download');
         await page.getByRole('button', { name: '次へ' }).click();
         const download = await downloadPromise;
