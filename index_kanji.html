@@ -57,9 +57,9 @@
         // 色の名前・表示色・IDの対応。赤=1, 青=2, 緑=3
         // キー「1」「2」「3」がそれぞれ画面表示順の選択肢に対応する
         const selectCol = [
-            {str: 'あか', col: 'red', id: 1},
-            {str: 'あお', col: 'blue', id: 2},
-            {str: 'みどり', col: 'green', id: 3},
+            {str: '赤', col: 'red', id: 1},
+            {str: '青', col: 'blue', id: 2},
+            {str: '緑', col: 'green', id: 3},
         ];
 
         // ---- 表示サイズの定数 ----
@@ -139,26 +139,26 @@
             if (task == 1) {
                 // 逆ストループの統制条件: 黒字の色名
                 stimulus_set = [
-                    {str: 'あか', strID: 1, col: 'black', colID: 5},
-                    {str: 'あお', strID: 2, col: 'black', colID: 5},
-                    {str: 'みどり', strID: 3, col: 'black', colID: 5},
+                    {str: '赤', strID: 1, col: 'black', colID: 5},
+                    {str: '青', strID: 2, col: 'black', colID: 5},
+                    {str: '緑', strID: 3, col: 'black', colID: 5},
                 ];
             } else if (task == 2 || task == 4) {
                 // 逆ストループ・ストループ: カラフルな文字（文字と色が不一致）
                 stimulus_set = [
-                    {str: 'あか', strID: 1, col: 'blue', colID: 2},
-                    {str: 'あか', strID: 1, col: 'green', colID: 3},
-                    {str: 'あお', strID: 2, col: 'red', colID: 1},
-                    {str: 'あお', strID: 2, col: 'green', colID: 3},
-                    {str: 'みどり', strID: 3, col: 'red', colID: 1},
-                    {str: 'みどり', strID: 3, col: 'blue', colID: 2},
+                    {str: '赤', strID: 1, col: 'blue', colID: 2},
+                    {str: '赤', strID: 1, col: 'green', colID: 3},
+                    {str: '青', strID: 2, col: 'red', colID: 1},
+                    {str: '青', strID: 2, col: 'green', colID: 3},
+                    {str: '緑', strID: 3, col: 'red', colID: 1},
+                    {str: '緑', strID: 3, col: 'blue', colID: 2},
                 ];
             } else {
                 // task == 3: ストループの統制条件: 色パッチ
                 stimulus_set = [
-                    {str: 'あか', strID: 1, col: 'red', colID: 1},
-                    {str: 'あお', strID: 2, col: 'blue', colID: 2},
-                    {str: 'みどり', strID: 3, col: 'green', colID: 3},
+                    {str: '赤', strID: 1, col: 'red', colID: 1},
+                    {str: '青', strID: 2, col: 'blue', colID: 2},
+                    {str: '緑', strID: 3, col: 'green', colID: 3},
                 ];
             }
 
