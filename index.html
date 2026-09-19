@@ -74,7 +74,7 @@
         // タイムライン（試行の配列）
         let experiment = [];
 
-        // ---- 性別・年齢フォーム ----
+        // ---- 性別・年齢・実験参加者IDフォーム ----
         let option_string = '<option value="">年齢を選択してください</option>';
         for (let i = 10; i <= 80; i++) {
             option_string += '<option value="' + i + '">' + i + '歳</option>';
@@ -82,17 +82,21 @@
 
         const form_trial = {
             type: jsPsychSurveyHtmlForm,
-            preamble: '<h2>実験を始めます。<br>性別と年齢を回答して「次へ」をクリックしてください。</h2>',
+            preamble: '<h2>実験を始めます。<br>性別・年齢・実験参加者IDを回答して「次へ」をクリックしてください。</h2>',
             html: '<input type="radio" name="gender" value="1" required>男性'
                 + '<input type="radio" name="gender" value="2">女性'
                 + '<input type="radio" name="gender" value="3">その他・無回答'
                 + '<div> </div>'
                 + '<select class="age" required name="age">'
                 + option_string + '</select>'
+                + '<div style="margin: 12px 0;">'
+                + '<label for="participant-id">実験参加者ID</label><br>'
+                + '<input type="text" id="participant-id" name="participantID" autocomplete="off">'
+                + '</div>'
                 + '<div> </div>',
             button_label: '次へ',
             on_finish: function(data) {
-                // 性別・年齢・日時・ランダムIDを全試行のデータに付与する
+                // 性別・年齢・実験参加者ID・日時・ランダムIDを全試行のデータに付与する
                 // task は各試行の data オブジェクトに個別設定（タスクループ内で付与）
                 jsPsych.data.addProperties(data.response);
                 jsPsych.data.addProperties({
