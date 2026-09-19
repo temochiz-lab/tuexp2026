@@ -91,7 +91,7 @@
                 + option_string + '</select>'
                 + '<div style="margin: 12px 0;">'
                 + '<label for="participant-id">実験参加者ID</label><br>'
-                + '<input type="text" id="participant-id" name="participantID" autocomplete="off">'
+                + '<input type="text" id="participant-id" name="participantID" autocomplete="off" required pattern=".*\\S.*" title="実験参加者IDを入力してください">'
                 + '</div>'
                 + '<div> </div>',
             button_label: '次へ',
