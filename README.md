@@ -4,10 +4,16 @@
 
 ## 起動方法
 
-ブラウザで `index.html` を開きます。URLパラメータで課題の種類・試行数を指定します。
+ブラウザで `index.html` を開きます。URLパラメータで課題の種類・試行数・色名の表記を指定します。
 
 ```
 index.html?task=1&trials=30&practice=10
+```
+
+漢字表示にする場合は `script=kanji` を追加します。省略時はひらがな表示です。
+
+```
+index.html?task=1&script=kanji
 ```
 
 GitHub Pages での公開URLの場合：
@@ -25,6 +31,7 @@ https://temochiz-lab.github.io/tuexp2026/index.html?task=1&trials=30&practice=10
 | `task` | タスク番号（コンマ区切りで複数指定可） | `1` |
 | `trials` | 本番試行の回数 | `30` |
 | `practice` | 練習試行の回数 | `10` |
+| `script` | 色名の表示方式（`hiragana` または `kanji`） | `hiragana` |
 
 ### task の種類
 
@@ -143,13 +150,13 @@ https://temochiz-lab.github.io/tuexp2026/index.html?task=1&trials=30&practice=10
 
 ## 記述例
 
-| 使用例 | パラメーター | ひらがな版リンク | 漢字版リンク |
-|---|---|---|---|
-| タスク1のみ、デフォルト設定 | `?task=1` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1" target="_blank">Clickで開始</a> | <a href="https://temochiz-lab.github.io/tuexp2026/index_kanji.html?task=1" target="_blank">Clickで開始</a> |
-| タスク2、本番30回、練習3回 | `?task=2&trials=30&practice=3` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=2&trials=30&practice=3" target="_blank">Clickで開始</a> | <a href="https://temochiz-lab.github.io/tuexp2026/index_kanji.html?task=2&trials=30&practice=3" target="_blank">Clickで開始</a> |
-| タスク1→2の順に実施 | `?task=1,2&trials=30&practice=10` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1,2&trials=30&practice=10" target="_blank">Clickで開始</a> | <a href="https://temochiz-lab.github.io/tuexp2026/index_kanji.html?task=1,2&trials=30&practice=10" target="_blank">Clickで開始</a> |
-| 動作確認用3回ずつのテスト（Task1→2） | `?task=1,2&trials=3&practice=3` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1,2&trials=3&practice=3" target="_blank">Clickで開始</a> | <a href="https://temochiz-lab.github.io/tuexp2026/index_kanji.html?task=1,2&trials=3&practice=3" target="_blank">Clickで開始</a> |
-| 動作確認用3回ずつのテスト（Task3→4） | `?task=3,4&trials=3&practice=3` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=3,4&trials=3&practice=3" target="_blank">Clickで開始</a> | <a href="https://temochiz-lab.github.io/tuexp2026/index_kanji.html?task=3,4&trials=3&practice=3" target="_blank">Clickで開始</a> |
-| Task1を60試行続ける | `?task=1&trials=60` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1&trials=60" target="_blank">Clickで開始</a> | <a href="https://temochiz-lab.github.io/tuexp2026/index_kanji.html?task=1&trials=60" target="_blank">Clickで開始</a> |
-| Task1と3を30試行ずつ実施 | `?task=1,3&trials=30` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1,3&trials=30" target="_blank">Clickで開始</a> | <a href="https://temochiz-lab.github.io/tuexp2026/index_kanji.html?task=1,3&trials=30" target="_blank">Clickで開始</a> |
-| Task2と4を30試行ずつ交互に2回実施 | `?task=2,4,2,4&trials=30` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=2,4,2,4&trials=30" target="_blank">Clickで開始</a> | <a href="https://temochiz-lab.github.io/tuexp2026/index_kanji.html?task=2,4,2,4&trials=30" target="_blank">Clickで開始</a> |
+| 使用例 | パラメーター | リンク |
+|---|---|---|
+| タスク1のみ、デフォルト設定 | `?task=1` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1" target="_blank">ひらがな</a> / <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1&script=kanji" target="_blank">漢字</a> |
+| タスク2、本番30回、練習3回 | `?task=2&trials=30&practice=3` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=2&trials=30&practice=3" target="_blank">ひらがな</a> / <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=2&trials=30&practice=3&script=kanji" target="_blank">漢字</a> |
+| タスク1→2の順に実施 | `?task=1,2&trials=30&practice=10` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1,2&trials=30&practice=10" target="_blank">ひらがな</a> / <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1,2&trials=30&practice=10&script=kanji" target="_blank">漢字</a> |
+| 動作確認用3回ずつのテスト（Task1→2） | `?task=1,2&trials=3&practice=3` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1,2&trials=3&practice=3" target="_blank">ひらがな</a> / <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1,2&trials=3&practice=3&script=kanji" target="_blank">漢字</a> |
+| 動作確認用3回ずつのテスト（Task3→4） | `?task=3,4&trials=3&practice=3` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=3,4&trials=3&practice=3" target="_blank">ひらがな</a> / <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=3,4&trials=3&practice=3&script=kanji" target="_blank">漢字</a> |
+| Task1を60試行続ける | `?task=1&trials=60` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1&trials=60" target="_blank">ひらがな</a> / <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1&trials=60&script=kanji" target="_blank">漢字</a> |
+| Task1と3を30試行ずつ実施 | `?task=1,3&trials=30` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1,3&trials=30" target="_blank">ひらがな</a> / <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=1,3&trials=30&script=kanji" target="_blank">漢字</a> |
+| Task2と4を30試行ずつ交互に2回実施 | `?task=2,4,2,4&trials=30` | <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=2,4,2,4&trials=30" target="_blank">ひらがな</a> / <a href="https://temochiz-lab.github.io/tuexp2026/index.html?task=2,4,2,4&trials=30&script=kanji" target="_blank">漢字</a> |
