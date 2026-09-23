@@ -84,7 +84,7 @@ https://temochiz-lab.github.io/tuexp2026/index.html?task=1&trials=30&practice=10
 色名（「赤・青・緑」または「あか・あお・みどり」）の文字サイズは、`index.html` の `fontSize1` を変更します。
 
 ```javascript
-const fontSize1 = 32;
+const fontSize1 = 36;
 ```
 
 この値は、刺激として表示される色名と、色名の選択肢の両方に適用されます。単位はpxです。
