@@ -38,7 +38,7 @@ Visual Studio Code（VS Code）などのエディタで、展開したフォル�
 const selectCol = [
     {str: colorNames[0], col: 'red', id: 1},
     {str: colorNames[1], col: 'blue', id: 2},
-    {str: colorNames[2], col: 'green', id: 3},
+    {str: colorNames[2], col: 'lime', id: 3},
 ];
 
 const fontSize1 = 36;
@@ -49,7 +49,9 @@ const fontSize1 = 36;
 
 `fontSize1` の数字を変更すると、刺激として表示される色名と、色名の選択肢の文字サイズが変わります。単位はpxです。
 
-`selectCol` の `col` を変更すると、色名や色パッチに使う実際の色を変更できます。現在は `red`、`blue`、`green` です。
+色名の選択肢の幅は `choiceWidth` で変更できます。現在は150pxです。色パッチの幅は `patchWidth` で設定しており、選択肢とは別に調整できます。
+
+`selectCol` の `col` を変更すると、色名や色パッチに使う実際の色を変更できます。現在は `red`、`blue`、`lime`（`#00FF00`）です。
 
 表示文字を切り替える場合は、URLに `script=kanji` を付けます。省略するとひらがな表示です。
 

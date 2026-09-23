@@ -67,13 +67,14 @@
         const selectCol = [
             {str: colorNames[0], col: 'red', id: 1},
             {str: colorNames[1], col: 'blue', id: 2},
-            {str: colorNames[2], col: 'green', id: 3},
+            {str: colorNames[2], col: 'lime', id: 3},
         ];
 
         // ---- 表示サイズの定数 ----
         const patchWidth = 100;   // 色パッチの幅（px）
         const patchHeight = 50;   // 色パッチの高さ（px）
         const patchBlank = 20;    // 選択肢間の余白（px）
+        const choiceWidth = 150;  // 色名の選択肢の幅（px）
         const fontSize1 = 36;     // 色名（刺激・選択肢）文字サイズ（px）
         // =========================================
         // ここまで
@@ -158,9 +159,9 @@
                 // 逆ストループ・ストループ: カラフルな文字（文字と色が不一致）
                 stimulus_set = [
                     {str: colorNames[0], strID: 1, col: 'blue', colID: 2},
-                    {str: colorNames[0], strID: 1, col: 'green', colID: 3},
+                    {str: colorNames[0], strID: 1, col: 'lime', colID: 3},
                     {str: colorNames[1], strID: 2, col: 'red', colID: 1},
-                    {str: colorNames[1], strID: 2, col: 'green', colID: 3},
+                    {str: colorNames[1], strID: 2, col: 'lime', colID: 3},
                     {str: colorNames[2], strID: 3, col: 'red', colID: 1},
                     {str: colorNames[2], strID: 3, col: 'blue', colID: 2},
                 ];
@@ -169,7 +170,7 @@
                 stimulus_set = [
                     {str: colorNames[0], strID: 1, col: 'red', colID: 1},
                     {str: colorNames[1], strID: 2, col: 'blue', colID: 2},
-                    {str: colorNames[2], strID: 3, col: 'green', colID: 3},
+                    {str: colorNames[2], strID: 3, col: 'lime', colID: 3},
                 ];
             }
 
@@ -387,7 +388,7 @@
                 html += '<div style="text-align: center; margin: 0 ' + patchBlank + 'px;">';
                 html += '<div style="font-size: 22px; font-weight: bold; margin-bottom: 8px;">' + (j + 1) + '</div>';
                 if (type == 1) {
-                    html += '<div style="width: ' + patchWidth + 'px; height: ' + patchHeight + 'px; font-size:' + fontSize1 + 'px; display: flex; align-items: center; justify-content: center;">' + colData[j].str + '</div>';
+                    html += '<div style="width: ' + choiceWidth + 'px; height: ' + patchHeight + 'px; font-size:' + fontSize1 + 'px; display: flex; align-items: center; justify-content: center;">' + colData[j].str + '</div>';
                 } else {
                     html += '<div style="background-color: ' + colData[j].col + '; width: ' + patchWidth + 'px; height: ' + patchHeight + 'px;"></div>';
                 }
