@@ -81,7 +81,7 @@ https://temochiz-lab.github.io/tuexp2026/index.html?task=1&trials=30&practice=10
 
 ### 色名の文字サイズを変更する方法
 
-色名（「赤・青・緑」または「あか・あお・みどり」）の文字サイズは、`index.html` の `fontSize1` を変更します。
+色名（「赤・青・緑」または「あか・あお・みどり」）の表示設定は、`index.html` の次のコメントで囲まれたブロックにまとめています。文字サイズは `fontSize1`、実際の色は `selectCol` の `col` を変更します。
 
 ```javascript
 const fontSize1 = 36;

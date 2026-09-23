@@ -45,12 +45,6 @@
         const taskParam = jsPsych.data.getURLVariable('task');
         const tasks = (taskParam == null) ? [1] : taskParam.split(',').map(Number);
 
-        // script: 色名の表示方式（省略時はひらがな）
-        const scriptParam = jsPsych.data.getURLVariable('script');
-        const colorNames = scriptParam === 'kanji'
-            ? ['赤', '青', '緑']
-            : ['あか', 'あお', 'みどり'];
-
         // trials: 本番試行の回数（デフォルト=30）
         const trialsParam = jsPsych.data.getURLVariable('trials');
         const nTrials = (trialsParam == null) ? 30 : Number(trialsParam);
@@ -59,7 +53,15 @@
         const practiceParam = jsPsych.data.getURLVariable('practice');
         const nPractice = (practiceParam == null) ? 10 : Number(practiceParam);
 
-        // ---- 回答の選択肢 ----
+        // =========================================
+        // 表示する色のサイズと実際の色はここで設定します
+        // =========================================
+        // script: 色名の表示方式（省略時はひらがな）
+        const scriptParam = jsPsych.data.getURLVariable('script');
+        const colorNames = scriptParam === 'kanji'
+            ? ['赤', '青', '緑']
+            : ['あか', 'あお', 'みどり'];
+
         // 色の名前・表示色・IDの対応。赤=1, 青=2, 緑=3
         // キー「1」「2」「3」がそれぞれ画面表示順の選択肢に対応する
         const selectCol = [
@@ -73,6 +75,9 @@
         const patchHeight = 50;   // 色パッチの高さ（px）
         const patchBlank = 20;    // 選択肢間の余白（px）
         const fontSize1 = 36;     // 色名（刺激・選択肢）文字サイズ（px）
+        // =========================================
+        // ここまで
+        // =========================================
 
         // 参加者ごとのランダムID（8文字）。保存ファイル名に使用
         const myrandID = jsPsych.randomization.randomID(8);
