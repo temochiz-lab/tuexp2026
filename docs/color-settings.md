@@ -32,14 +32,11 @@ Visual Studio Code（VS Code）などのエディタで、展開したフォル�
 
 ```javascript
 // =========================================
-// 表示する色のサイズと実際の色はここで設定します
+// 色と文字サイズの設定
 // =========================================
 // ...
-const selectCol = [
-    {str: colorNames[0], col: 'red', id: 1},
-    {str: colorNames[1], col: 'blue', id: 2},
-    {str: colorNames[2], col: 'lime', id: 3},
-];
+const textColors = { 1: 'red', 2: 'blue', 3: 'green' };
+const patchColors = { 1: 'red', 2: 'blue', 3: 'lime' };
 
 const fontSize1 = 36;
 // =========================================
@@ -51,19 +48,19 @@ const fontSize1 = 36;
 
 色名の選択肢の幅は `choiceWidth` で変更できます。現在は150pxです。色パッチの幅は `patchWidth` で設定しており、選択肢とは別に調整できます。
 
-回答選択肢の色（色パッチ、および色名選択肢）は `selectCol` の `col` で変更できます。刺激として表示する文字・パッチの色は、別設定の `stimulusColors` で変更できます。両者は独立しているため、例えば回答選択肢を `red` のまま、刺激の赤だけを `#CC0000` にできます。
+文字の色は `textColors`、パッチ（四角）の色は `patchColors` で変更できます。文字とパッチは完全に別の設定です。
 
 ```javascript
-const selectCol = [
-    {str: colorNames[0], col: 'red', id: 1},
-    {str: colorNames[1], col: 'blue', id: 2},
-    {str: colorNames[2], col: 'lime', id: 3},
-];
+const textColors = {
+    1: 'red',
+    2: 'blue',
+    3: 'green',
+};
 
-const stimulusColors = {
-    red: 'red',
-    blue: 'blue',
-    green: 'lime',
+const patchColors = {
+    1: 'red',
+    2: 'blue',
+    3: 'lime',
 };
 ```
 

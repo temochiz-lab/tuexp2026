@@ -62,23 +62,30 @@
             ? ['赤', '青', '緑']
             : ['あか', 'あお', 'みどり'];
 
-        // 回答選択肢の色(四角)
-        // task 1/2で表示する色パッチと、task 3/4で表示する色名の色
-        // をここで設定する。赤=1、青=2、緑=3。
-        const selectCol = [
-            {str: colorNames[0], col: 'red', id: 1},
-            {str: colorNames[1], col: 'blue', id: 2},
-            {str: colorNames[2], col: 'lime', id: 3},
-        ];
-
-        // 中央に表示する刺激の色(文字)
-        // task 2/4の文字と、task 3の色パッチの色をここで設定する。
-        // 回答選択肢の色（selectCol）には影響しない。
-        const stimulusColors = {
-            red: 'red',
-            blue: 'blue',
-            green: 'green',
+        // 文字の色
+        // task 2/4の中央に表示する文字の色を設定する。
+        // 赤=1、青=2、緑=3。
+        const textColors = {
+            1: 'red',
+            2: 'blue',
+            3: 'green',
         };
+
+        // パッチ（四角）の色
+        // task 1/2の回答選択肢と、task 3の中央に表示する
+        // パッチの色を設定する。赤=1、青=2、緑=3。
+        const patchColors = {
+            1: 'red',
+            2: 'blue',
+            3: 'lime',
+        };
+
+        // 回答選択肢の色名とID
+        const selectCol = [
+            {str: colorNames[0], id: 1},
+            {str: colorNames[1], id: 2},
+            {str: colorNames[2], id: 3},
+        ];
 
         // ---- 表示サイズの定数 ----
         const patchWidth = 100;   // 色パッチの幅（px）
@@ -168,19 +175,19 @@
             } else if (task == 2 || task == 4) {
                 // 逆ストループ・ストループ: カラフルな文字（文字と色が不一致）
                 stimulus_set = [
-                    {str: colorNames[0], strID: 1, col: stimulusColors.blue, colID: 2},
-                    {str: colorNames[0], strID: 1, col: stimulusColors.green, colID: 3},
-                    {str: colorNames[1], strID: 2, col: stimulusColors.red, colID: 1},
-                    {str: colorNames[1], strID: 2, col: stimulusColors.green, colID: 3},
-                    {str: colorNames[2], strID: 3, col: stimulusColors.red, colID: 1},
-                    {str: colorNames[2], strID: 3, col: stimulusColors.blue, colID: 2},
+                    {str: colorNames[0], strID: 1, col: textColors[2], colID: 2},
+                    {str: colorNames[0], strID: 1, col: textColors[3], colID: 3},
+                    {str: colorNames[1], strID: 2, col: textColors[1], colID: 1},
+                    {str: colorNames[1], strID: 2, col: textColors[3], colID: 3},
+                    {str: colorNames[2], strID: 3, col: textColors[1], colID: 1},
+                    {str: colorNames[2], strID: 3, col: textColors[2], colID: 2},
                 ];
             } else {
                 // task == 3: ストループの統制条件: 色パッチ
                 stimulus_set = [
-                    {str: colorNames[0], strID: 1, col: stimulusColors.red, colID: 1},
-                    {str: colorNames[1], strID: 2, col: stimulusColors.blue, colID: 2},
-                    {str: colorNames[2], strID: 3, col: stimulusColors.green, colID: 3},
+                    {str: colorNames[0], strID: 1, col: patchColors[1], colID: 1},
+                    {str: colorNames[1], strID: 2, col: patchColors[2], colID: 2},
+                    {str: colorNames[2], strID: 3, col: patchColors[3], colID: 3},
                 ];
             }
 
@@ -225,9 +232,9 @@
                     // 選択肢HTML（task 1/2: 色パッチ、task 3/4: 色名テキスト）
                     let colScale = '';
                     if (task == 1 || task == 2) {
-                        colScale = makeColScale(shuffledCol, 2); // 色パッチの選択肢
+                        colScale = makeColScale(shuffledCol, 2); // パッチの選択肢
                     } else {
-                        colScale = makeColScale(shuffledCol, 1); // 色名（文字）の選択肢
+                        colScale = makeColScale(shuffledCol, 1); // 色名の選択肢
                     }
 
                     // 刺激HTML（task 1/2/4: 文字、task 3: 色パッチ）
@@ -400,7 +407,7 @@
                 if (type == 1) {
                     html += '<div style="width: ' + choiceWidth + 'px; height: ' + patchHeight + 'px; font-size:' + fontSize1 + 'px; display: flex; align-items: center; justify-content: center;">' + colData[j].str + '</div>';
                 } else {
-                    html += '<div style="background-color: ' + colData[j].col + '; width: ' + patchWidth + 'px; height: ' + patchHeight + 'px;"></div>';
+                    html += '<div style="background-color: ' + patchColors[colData[j].id] + '; width: ' + patchWidth + 'px; height: ' + patchHeight + 'px;"></div>';
                 }
                 html += '</div>';
             }
