@@ -54,7 +54,7 @@
         const nPractice = (practiceParam == null) ? 10 : Number(practiceParam);
 
         // =========================================
-        // 表示する色のサイズと実際の色はここで設定します
+        // 色と文字サイズの設定
         // =========================================
         // script: 色名の表示方式（省略時はひらがな）
         const scriptParam = jsPsych.data.getURLVariable('script');
@@ -62,13 +62,23 @@
             ? ['赤', '青', '緑']
             : ['あか', 'あお', 'みどり'];
 
-        // 色の名前・表示色・IDの対応。赤=1, 青=2, 緑=3
-        // キー「1」「2」「3」がそれぞれ画面表示順の選択肢に対応する
+        // 回答選択肢の色
+        // task 1/2で表示する色パッチと、task 3/4で表示する色名の色
+        // をここで設定する。赤=1、青=2、緑=3。
         const selectCol = [
             {str: colorNames[0], col: 'red', id: 1},
             {str: colorNames[1], col: 'blue', id: 2},
             {str: colorNames[2], col: 'lime', id: 3},
         ];
+
+        // 中央に表示する刺激の色
+        // task 2/4の文字と、task 3の色パッチの色をここで設定する。
+        // 回答選択肢の色（selectCol）には影響しない。
+        const stimulusColors = {
+            red: 'red',
+            blue: 'blue',
+            green: 'green',
+        };
 
         // ---- 表示サイズの定数 ----
         const patchWidth = 100;   // 色パッチの幅（px）
@@ -158,19 +168,19 @@
             } else if (task == 2 || task == 4) {
                 // 逆ストループ・ストループ: カラフルな文字（文字と色が不一致）
                 stimulus_set = [
-                    {str: colorNames[0], strID: 1, col: 'blue', colID: 2},
-                    {str: colorNames[0], strID: 1, col: 'lime', colID: 3},
-                    {str: colorNames[1], strID: 2, col: 'red', colID: 1},
-                    {str: colorNames[1], strID: 2, col: 'lime', colID: 3},
-                    {str: colorNames[2], strID: 3, col: 'red', colID: 1},
-                    {str: colorNames[2], strID: 3, col: 'blue', colID: 2},
+                    {str: colorNames[0], strID: 1, col: stimulusColors.blue, colID: 2},
+                    {str: colorNames[0], strID: 1, col: stimulusColors.green, colID: 3},
+                    {str: colorNames[1], strID: 2, col: stimulusColors.red, colID: 1},
+                    {str: colorNames[1], strID: 2, col: stimulusColors.green, colID: 3},
+                    {str: colorNames[2], strID: 3, col: stimulusColors.red, colID: 1},
+                    {str: colorNames[2], strID: 3, col: stimulusColors.blue, colID: 2},
                 ];
             } else {
                 // task == 3: ストループの統制条件: 色パッチ
                 stimulus_set = [
-                    {str: colorNames[0], strID: 1, col: 'red', colID: 1},
-                    {str: colorNames[1], strID: 2, col: 'blue', colID: 2},
-                    {str: colorNames[2], strID: 3, col: 'lime', colID: 3},
+                    {str: colorNames[0], strID: 1, col: stimulusColors.red, colID: 1},
+                    {str: colorNames[1], strID: 2, col: stimulusColors.blue, colID: 2},
+                    {str: colorNames[2], strID: 3, col: stimulusColors.green, colID: 3},
                 ];
             }
 

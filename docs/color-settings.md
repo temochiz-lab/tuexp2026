@@ -51,7 +51,21 @@ const fontSize1 = 36;
 
 色名の選択肢の幅は `choiceWidth` で変更できます。現在は150pxです。色パッチの幅は `patchWidth` で設定しており、選択肢とは別に調整できます。
 
-`selectCol` の `col` を変更すると、色名や色パッチに使う実際の色を変更できます。現在は `red`、`blue`、`lime`（`#00FF00`）です。
+回答選択肢の色（色パッチ、および色名選択肢）は `selectCol` の `col` で変更できます。刺激として表示する文字・パッチの色は、別設定の `stimulusColors` で変更できます。両者は独立しているため、例えば回答選択肢を `red` のまま、刺激の赤だけを `#CC0000` にできます。
+
+```javascript
+const selectCol = [
+    {str: colorNames[0], col: 'red', id: 1},
+    {str: colorNames[1], col: 'blue', id: 2},
+    {str: colorNames[2], col: 'lime', id: 3},
+];
+
+const stimulusColors = {
+    red: 'red',
+    blue: 'blue',
+    green: 'lime',
+};
+```
 
 表示文字を切り替える場合は、URLに `script=kanji` を付けます。省略するとひらがな表示です。
 
