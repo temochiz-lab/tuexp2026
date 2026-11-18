@@ -114,10 +114,9 @@ for (const taskList of TASK_PAIRS) {
         await page.waitForTimeout(500);
 
         // ---- フォーム ----
-        await expect(page.getByText('性別・年齢・実験参加者IDを回答して')).toBeVisible();
+        await expect(page.getByText('性別と年齢を回答して')).toBeVisible();
         await page.locator('input[name="gender"][value="1"]').click();
         await page.locator('select[name="age"]').selectOption('25');
-        await page.getByLabel('実験参加者ID', { exact: true }).fill('marker-test');
         await page.getByRole('button', { name: '次へ' }).click();
         await page.waitForTimeout(300);
 
@@ -129,8 +128,9 @@ for (const taskList of TASK_PAIRS) {
         // ---- 終了メッセージ & CSVダウンロード ----
         await expect(page.getByText('すべての試行に回答しました')).toBeVisible();
         const finalStimulusMarkerColor = (TRIAL_COUNT - 1) % 2 === 0 ? 'rgb(0, 0, 0)' : 'rgb(255, 255, 255)';
+        const endMarkerColor = finalStimulusMarkerColor === 'rgb(0, 0, 0)' ? 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)';
         expect(await isMarkerHidden(page)).toBe(false); // 終了メッセージ画面でもマーカーは表示し続ける
-        expect(await getMarkerColor(page)).toBe(finalStimulusMarkerColor);
+        expect(await getMarkerColor(page)).toBe(endMarkerColor);
         const downloadPromise = page.waitForEvent('download');
         await page.getByRole('button', { name: '次へ' }).click();
         const download = await downloadPromise;
